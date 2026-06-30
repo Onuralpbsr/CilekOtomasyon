@@ -80,17 +80,18 @@ SHT30 I2C adresleri: `0x44` (ADDR pin GND) ve `0x45` (ADDR pin VCC). Debi sensö
 
 ## Büyüme Evreleri ve Sulama Mantığı
 
-Evreye göre substrat nem eşiği, hedef drenaj oranı ve günlük maksimum sulama sayısı (`STAGE_PARAMS`, web panelinden `/api/control` ile `stage` 0-3 olarak değiştirilebilir):
+Evreye göre substrat nem eşiği, hedef drenaj oranı, tek sulama darbesinin hacmi ve günlük maksimum sulama sayısı (`STAGE_PARAMS`, web panelinden `/api/control` ile `stage` 0-3 olarak değiştirilebilir):
 
-| Evre | Nem alt sınırı (sulama tetik) | Nem üst hedef | Hedef drenaj oranı | Gün içi max sulama |
-|---|---|---|---|---|
-| 0 — Fide | %70 | %75 | %12.5 | 3 |
-| 1 — Vegetatif | %65 | %70 | %17.5 | 6 |
-| 2 — Çiçek | %60 | %65 | %22.5 | 8 |
-| 3 — Meyve | %55 | %65 | %27.5 | 12 |
+| Evre | Nem alt sınırı (sulama tetik) | Nem üst hedef | Hedef drenaj oranı | Darbe hacmi | Gün içi max sulama |
+|---|---|---|---|---|---|
+| 0 — Fide | %70 | %75 | %12.5 | 0.15 L | 3 |
+| 1 — Vegetatif | %65 | %70 | %17.5 | 0.25 L | 6 |
+| 2 — Çiçek | %60 | %65 | %22.5 | 0.35 L | 8 |
+| 3 — Meyve | %55 | %65 | %27.5 | 0.45 L | 12 |
 
 - Substrat nemi eşiğin altına düşünce ve gece yasak penceresi (22:00–07:00, kök çürümesi riskini azaltmak için) dışında ve günlük sulama limiti dolmamışsa pompa devreye girer.
-- Tek sulama, 0.25 L hacme ulaşılınca veya 60 saniyelik zaman aşımına uğrayınca durur; zaman aşımına uğrarsa pompa arızası (`pumpFault`) işaretlenir ve SMS atılır.
+- Tek sulama, evrenin darbe hacmine ulaşılınca veya 60 saniyelik zaman aşımına uğrayınca durur; zaman aşımına uğrarsa pompa arızası (`pumpFault`) işaretlenir ve SMS atılır. Darbe hacmi bitki/kök hacmiyle birlikte büyür: fide en az, meyve evresi en çok su alır.
+- **Drenaj oranı takibi:** giriş ve drenaj debi sensörlerinden bugünkü gerçek drenaj/giriş oranı hesaplanır (`runoffPctToday`) ve evrenin hedefiyle (`targetRunoffPct`) birlikte API'den ve web panelinden izlenebilir. Gün içi giriş hacmi 0.5 L'nin altındayken gürültülü oran hesaplanmaz. Bu sadece bilgilendirme amaçlıdır, sulamayı otomatik değiştirmez — hedeften sapma sürekliyse darbe hacmini veya frekansını elle ayarlamak gerekebilir.
 
 ## İklim Kontrolü
 
@@ -98,6 +99,7 @@ Evreye göre substrat nem eşiği, hedef drenaj oranı ve günlük maksimum sula
 - **Bağıl nem:** %60–75 hedef aralık; düşükse nemlendirme (iklim rölesi) açılır, yüksekse kapanır.
 - **Kök bölgesi sıcaklığı:** 18–22°C hedef; bu aralığın dışına çıkarsa iklim rölesi buna göre devreye girer/çıkar.
 - **Fotoperiyot:** Işık rölesi 06:00–22:00 arası (16 saat) açık tutulur, gün-nötr çeşit varsayımıyla.
+- **Sensör yedekliliği:** Ortam sıcaklık/nem referansı önce BME280'den alınır; o sensör arızalanırsa iki SHT30'dan geçerli olan(lar)ı kullanılır (her ikisi de çalışıyorsa ortalaması, sadece biri çalışıyorsa o tek değer). Üçü de okunamazsa ilgili kontrol o döngüde atlanır.
 
 ## Güvenlik / Alarm Mantığı (SIM800L SMS)
 
@@ -105,12 +107,14 @@ Evreye göre substrat nem eşiği, hedef drenaj oranı ve günlük maksimum sula
 - **Pompa düşük akım** (nominal 0.8A'nın 0.3 katı altı) → kuru çalışma/hava şüphesi, pompa kilitlenir.
 - **Pompa zaman aşımı** (60 sn'de hedef hacme ulaşılamazsa) → arıza işaretlenir.
 - **Su seviyesi düşük** (şamandıra) → sulama tamamen durdurulur.
+- Güvenlik kesintisi otomatik sulamayla sınırlı değildir: pompa web panelinden **manuel** açılmışken arıza oluşursa da pompa anında kapatılır (manuel açma da aynı korumadan geçer). Aktif arıza varken pompa manuel olarak tekrar açılamaz.
 - Arızalar web panelindeki "Arızaları Temizle" butonuyla (`clearFaults`) sıfırlanabilir.
+- **WiFi bağlantısı koparsa** ESP32 30 saniyede bir otomatik yeniden bağlanmayı dener (`WiFi.setAutoReconnect` + periyodik kontrol); sulama/iklim mantığı WiFi'den bağımsız çalışmaya devam eder, sadece web panelinden erişim o süre kesilir.
 
 ## HTTP API
 
 **ESP32 firmware (`httpapi.cpp`):**
-- `GET /api/status` — tüm sensör verisi, röle durumları, arızalar ve aktif evre (JSON)
+- `GET /api/status` — tüm sensör verisi, röle durumları, arızalar, aktif evre ve `irrigation.runoffPctToday`/`runoffTargetPct` (JSON)
 - `POST /api/control` — gövde: `{ "clearFaults": true }`, `{ "stage": 0-3 }`, veya `{ "relay": "pump"|"fan"|"light"|"climate", "on": true|false }`
 
 **Web sunucusu (`server.js`, Mac üzerinde):**
@@ -121,7 +125,7 @@ Evreye göre substrat nem eşiği, hedef drenaj oranı ve günlük maksimum sula
 ## Web Paneli
 
 `http://localhost:3000` adresinde, koyu temalı tek sayfa dashboard:
-- **Canlı kartlar:** ortam sıcaklık/nem/basınç (BME280), iki ayrı SHT30 sıcaklık/nem, ışık (lux), besin çözeltisi ve kök bölgesi sıcaklığı, substrat nemi, günlük sulama/drenaj hacmi ve sayısı, pompa voltaj/akım/güç, AC voltaj/akım/güç/enerji/frekans/güç faktörü, su seviyesi durumu.
+- **Canlı kartlar:** ortam sıcaklık/nem/basınç (BME280), iki ayrı SHT30 sıcaklık/nem, ışık (lux), besin çözeltisi ve kök bölgesi sıcaklığı, substrat nemi, günlük sulama/drenaj hacmi ve sayısı, gerçek/hedef drenaj oranı, pompa voltaj/akım/güç, AC voltaj/akım/güç/enerji/frekans/güç faktörü, su seviyesi durumu.
 - **Röle kontrolü:** pompa/fan/ışık/iklim rölelerini tek tıkla aç/kapat.
 - **Uyarılar paneli:** aktif arıza varsa kırmızı, yoksa "Aktif uyarı yok"; "Arızaları Temizle" butonu.
 - **24 saatlik geçmiş grafikler:** Sıcaklık/Nem, Sulama, Işık, Güç/Enerji — Chart.js ile, dakikada bir yenilenir.
