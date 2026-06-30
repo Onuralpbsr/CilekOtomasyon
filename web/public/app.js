@@ -1,8 +1,8 @@
 const RELAYS = [
   { key: "pump", label: "Pompa" },
-  { key: "relay1", label: "Röle 1 (boşta, ışık yok)" },
-  { key: "relay2", label: "Röle 2 (boşta, fan yok)" },
-  { key: "relay3", label: "Röle 3 (boşta, ısıtıcı/nemlendirici yok)" },
+  { key: "relay1", label: "Röle 1 (boşta)" },
+  { key: "relay2", label: "Röle 2 (boşta)" },
+  { key: "relay3", label: "Röle 3 (boşta)" },
 ];
 
 const STAGE_NAMES = ["Fide", "Vegetatif", "Çiçek", "Meyve"];
