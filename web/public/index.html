@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Çilek Otomasyon Paneli</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<header>
+  <h1>🍓 Çilek Otomasyon Paneli</h1>
+  <div id="connStatus" class="badge">Bağlanıyor...</div>
+</header>
+
+<section class="grid" id="cards"></section>
+
+<section class="panel">
+  <h2>Röle Kontrolü</h2>
+  <div class="relays" id="relayControls"></div>
+</section>
+
+<section class="panel">
+  <h2>Uyarılar</h2>
+  <div id="alarms"></div>
+  <button id="clearFaultsBtn">Arızaları Temizle</button>
+</section>
+
+<section class="panel">
+  <h2>Sıcaklık / Nem Geçmişi (24 saat)</h2>
+  <canvas id="climateChart" height="90"></canvas>
+</section>
+
+<section class="panel">
+  <h2>Sulama Geçmişi (24 saat)</h2>
+  <canvas id="irrigationChart" height="90"></canvas>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>

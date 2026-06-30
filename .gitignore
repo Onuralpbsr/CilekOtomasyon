@@ -1,0 +1,4 @@
+web/node_modules/
+web/data/*.db
+*.log
+.DS_Store
