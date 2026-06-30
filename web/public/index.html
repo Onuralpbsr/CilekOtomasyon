@@ -8,44 +8,69 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<header>
-  <h1>🍓 Çilek Otomasyon Paneli</h1>
-  <div id="connStatus" class="badge">Bağlanıyor...</div>
-</header>
+<div class="container">
 
-<section class="grid" id="cards"></section>
+  <header>
+    <h1>🍓 Çilek Otomasyon</h1>
+    <div id="connStatus" class="badge">Bağlanıyor...</div>
+  </header>
 
-<section class="panel">
-  <h2>Röle Kontrolü</h2>
-  <div class="relays" id="relayControls"></div>
-</section>
+  <section class="status-strip" id="statusStrip"></section>
 
-<section class="panel">
-  <h2>Uyarılar</h2>
-  <div id="alarms"></div>
-  <button id="clearFaultsBtn">Arızaları Temizle</button>
-</section>
+  <section class="panel">
+    <h2>İklim</h2>
+    <div class="grid" id="cardsClimate"></div>
+  </section>
 
-<section class="panel">
-  <h2>Sıcaklık / Nem Geçmişi (24 saat)</h2>
-  <canvas id="climateChart" height="90"></canvas>
-</section>
+  <section class="panel">
+    <h2>Kök &amp; Substrat</h2>
+    <div class="grid" id="cardsRoot"></div>
+  </section>
 
-<section class="panel">
-  <h2>Sulama Geçmişi (24 saat)</h2>
-  <canvas id="irrigationChart" height="90"></canvas>
-</section>
+  <section class="panel">
+    <h2>Sulama</h2>
+    <div class="grid" id="cardsIrrigation"></div>
+  </section>
 
-<section class="panel">
-  <h2>Işık Geçmişi (24 saat)</h2>
-  <canvas id="lightChart" height="90"></canvas>
-</section>
+  <section class="panel">
+    <h2>Güç</h2>
+    <div class="grid" id="cardsPower"></div>
+  </section>
 
-<section class="panel">
-  <h2>Güç / Enerji Geçmişi (24 saat)</h2>
-  <canvas id="powerChart" height="90"></canvas>
-</section>
+  <section class="panel">
+    <h2>Röle Kontrolü</h2>
+    <div class="relays" id="relayControls"></div>
+  </section>
 
+  <section class="panel">
+    <h2>Uyarılar</h2>
+    <div id="alarms"></div>
+    <button id="clearFaultsBtn">Arızaları Temizle</button>
+  </section>
+
+  <section class="panel">
+    <h2>Geçmiş (24 saat)</h2>
+    <div class="chart-grid">
+      <div class="chart-box">
+        <h3>Sıcaklık / Nem</h3>
+        <canvas id="climateChart" height="160"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Sulama</h3>
+        <canvas id="irrigationChart" height="160"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Işık</h3>
+        <canvas id="lightChart" height="160"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Güç / Enerji</h3>
+        <canvas id="powerChart" height="160"></canvas>
+      </div>
+    </div>
+  </section>
+
+</div>
 <script src="app.js"></script>
 </body>
 </html>

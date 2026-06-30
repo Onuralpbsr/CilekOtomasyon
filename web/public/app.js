@@ -5,10 +5,16 @@ const RELAYS = [
   { key: "climate", label: "Isıtıcı/Nem" },
 ];
 
+const STAGE_NAMES = ["Fide", "Vegetatif", "Çiçek", "Meyve"];
+
 let climateChart, irrigationChart, lightChart, powerChart;
 
 function card(label, value, unit) {
   return `<div class="card"><div class="label">${label}</div><div class="value">${value}<span class="unit"> ${unit || ""}</span></div></div>`;
+}
+
+function stat(label, value, alert = false) {
+  return `<div class="stat ${alert ? "alert" : ""}"><div class="label">${label}</div><div class="value">${value}</div></div>`;
 }
 
 function fmt(n, digits = 1) {
@@ -29,22 +35,38 @@ async function refreshLive() {
     connBadge.textContent = "Bağlı";
     connBadge.className = "badge ok";
 
-    const cards = document.getElementById("cards");
-    cards.innerHTML = [
+    const hasFault = status.faults.pumpFault || status.faults.waterLowFault;
+
+    document.getElementById("statusStrip").innerHTML = [
+      stat("Evre", STAGE_NAMES[status.stage] ?? "—"),
+      stat("Su Seviyesi", status.irrigation.waterLevelOk ? "Normal" : "DÜŞÜK", !status.irrigation.waterLevelOk),
+      stat("Sulama", status.irrigation.inProgress ? "Sürüyor" : "Bekliyor"),
+      stat("Bugün Sulama", `${status.irrigation.irrigationsToday} kez`),
+      stat("Uyarı", hasFault ? (status.faults.lastAlarm || "Aktif arıza") : "Yok", hasFault),
+    ].join("");
+
+    document.getElementById("cardsClimate").innerHTML = [
       card("Ortam Sıcaklık (BME280)", fmt(status.climate.ambientTempBME), "°C"),
       card("Ortam Nem (BME280)", fmt(status.climate.ambientHumBME), "%"),
       card("Basınç", fmt(status.climate.pressureHPa, 0), "hPa"),
-      card("SHT30 #1 Sıcaklık", fmt(status.climate.tempSHT1), "°C"),
-      card("SHT30 #1 Nem", fmt(status.climate.humSHT1), "%"),
-      card("SHT30 #2 Sıcaklık", fmt(status.climate.tempSHT2), "°C"),
-      card("SHT30 #2 Nem", fmt(status.climate.humSHT2), "%"),
+      card("SHT30 #1", `${fmt(status.climate.tempSHT1)}°C / ${fmt(status.climate.humSHT1)}`, "%"),
+      card("SHT30 #2", `${fmt(status.climate.tempSHT2)}°C / ${fmt(status.climate.humSHT2)}`, "%"),
       card("Işık", fmt(status.climate.lux, 0), "lux"),
+    ].join("");
+
+    document.getElementById("cardsRoot").innerHTML = [
       card("Besin Sıcaklığı", fmt(status.root.nutrientTempC), "°C"),
       card("Kök Bölgesi Sıcaklığı", fmt(status.root.rootZoneTempC), "°C"),
-      card("Substrate Nem", fmt(status.root.soilMoisturePct), "%"),
+      card("Substrat Nemi", fmt(status.root.soilMoisturePct), "%"),
+    ].join("");
+
+    document.getElementById("cardsIrrigation").innerHTML = [
       card("Sulama (Bugün)", fmt(status.irrigation.flowInLitresToday, 2), "L"),
       card("Drenaj (Bugün)", fmt(status.irrigation.flowDrainLitresToday, 2), "L"),
       card("Sulama Sayısı", status.irrigation.irrigationsToday, "kez"),
+    ].join("");
+
+    document.getElementById("cardsPower").innerHTML = [
       card("Pompa Voltajı", fmt(status.power.pumpVoltage, 2), "V"),
       card("Pompa Akımı", fmt(status.power.pumpCurrentA, 2), "A"),
       card("Pompa Güç", fmt(status.power.pumpPowerW, 1), "W"),
@@ -54,7 +76,6 @@ async function refreshLive() {
       card("AC Enerji (toplam)", fmt(status.power.acEnergyKWh, 3), "kWh"),
       card("AC Frekans", fmt(status.power.acFrequency, 0), "Hz"),
       card("AC Güç Faktörü", fmt(status.power.acPowerFactor, 2), ""),
-      card("Su Seviyesi", status.irrigation.waterLevelOk ? "Normal" : "DÜŞÜK", ""),
     ].join("");
 
     const relayDiv = document.getElementById("relayControls");
@@ -67,7 +88,6 @@ async function refreshLive() {
     });
 
     const alarms = document.getElementById("alarms");
-    const hasFault = status.faults.pumpFault || status.faults.waterLowFault;
     alarms.className = hasFault ? "has-alarm" : "";
     alarms.textContent = hasFault ? (status.faults.lastAlarm || "Aktif arıza var") : "Aktif uyarı yok";
 
