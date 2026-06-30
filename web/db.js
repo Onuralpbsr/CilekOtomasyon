@@ -18,6 +18,8 @@ db.exec(`
     sht2_temp REAL,
     sht2_hum REAL,
     lux INTEGER,
+    vpd_kpa REAL,
+    climate_alert INTEGER,
     nutrient_temp REAL,
     rootzone_temp REAL,
     soil_moisture_pct REAL,
@@ -44,11 +46,12 @@ db.exec(`
 const insertStmt = db.prepare(`
   INSERT INTO readings (
     ts, ambient_temp, ambient_hum, pressure_hpa, sht1_temp, sht1_hum, sht2_temp, sht2_hum, lux,
+    vpd_kpa, climate_alert,
     nutrient_temp, rootzone_temp, soil_moisture_pct, flow_in_l, flow_drain_l, runoff_pct,
     pump_voltage, pump_current_a, pump_power_w,
     ac_voltage, ac_current_a, ac_power_w, ac_energy_kwh, ac_frequency, ac_power_factor,
     water_level_ok, pump_fault, water_low_fault, stage
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
 function n(v) {
@@ -66,6 +69,8 @@ function insertReading(status) {
     n(status.climate?.tempSHT2),
     n(status.climate?.humSHT2),
     n(status.climate?.lux),
+    n(status.climate?.vpdKPa),
+    status.climate?.alertActive ? 1 : 0,
     n(status.root?.nutrientTempC),
     n(status.root?.rootZoneTempC),
     n(status.root?.soilMoisturePct),

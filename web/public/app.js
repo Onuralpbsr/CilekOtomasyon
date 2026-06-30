@@ -1,8 +1,8 @@
 const RELAYS = [
   { key: "pump", label: "Pompa" },
-  { key: "fan", label: "Fan" },
   { key: "light", label: "Işık" },
-  { key: "climate", label: "Isıtıcı/Nem" },
+  { key: "relay2", label: "Röle 2 (boşta, fan/ısıtıcı yok)" },
+  { key: "relay3", label: "Röle 3 (boşta, fan/ısıtıcı yok)" },
 ];
 
 const STAGE_NAMES = ["Fide", "Vegetatif", "Çiçek", "Meyve"];
@@ -35,13 +35,14 @@ async function refreshLive() {
     connBadge.textContent = "Bağlı";
     connBadge.className = "badge ok";
 
-    const hasFault = status.faults.pumpFault || status.faults.waterLowFault;
+    const hasFault = status.faults.pumpFault || status.faults.waterLowFault || status.climate.alertActive;
 
     document.getElementById("statusStrip").innerHTML = [
       stat("Evre", STAGE_NAMES[status.stage] ?? "—"),
       stat("Su Seviyesi", status.irrigation.waterLevelOk ? "Normal" : "DÜŞÜK", !status.irrigation.waterLevelOk),
       stat("Sulama", status.irrigation.inProgress ? "Sürüyor" : "Bekliyor"),
       stat("Bugün Sulama", `${status.irrigation.irrigationsToday} kez`),
+      stat("İklim", status.climate.alertActive ? "Hedef dışı" : "Normal", status.climate.alertActive),
       stat("Uyarı", hasFault ? (status.faults.lastAlarm || "Aktif arıza") : "Yok", hasFault),
     ].join("");
 
@@ -52,6 +53,7 @@ async function refreshLive() {
       card("SHT30 #1", `${fmt(status.climate.tempSHT1)}°C / ${fmt(status.climate.humSHT1)}`, "%"),
       card("SHT30 #2", `${fmt(status.climate.tempSHT2)}°C / ${fmt(status.climate.humSHT2)}`, "%"),
       card("Işık", fmt(status.climate.lux, 0), "lux"),
+      card("VPD", fmt(status.climate.vpdKPa, 2), "kPa"),
     ].join("");
 
     document.getElementById("cardsRoot").innerHTML = [
@@ -91,6 +93,9 @@ async function refreshLive() {
     const alarms = document.getElementById("alarms");
     alarms.className = hasFault ? "has-alarm" : "";
     alarms.textContent = hasFault ? (status.faults.lastAlarm || "Aktif arıza var") : "Aktif uyarı yok";
+    if (status.climate.alertActive && !status.faults.pumpFault && !status.faults.waterLowFault) {
+      alarms.textContent += " (fan/ısıtıcı/nemlendirici yok, manuel müdahale gerekebilir)";
+    }
 
   } catch (e) {
     connBadge.textContent = "Panel sunucusuna ulaşılamıyor";
@@ -123,6 +128,7 @@ async function refreshHistory() {
       { label: "SHT30 #2 (°C)", data: rows.map(r => r.sht2_temp), borderColor: "#3498db", tension: 0.3 },
       { label: "Kök Bölgesi (°C)", data: rows.map(r => r.rootzone_temp), borderColor: "#f1c40f", tension: 0.3 },
       { label: "Besin Çözeltisi (°C)", data: rows.map(r => r.nutrient_temp), borderColor: "#e67e22", tension: 0.3 },
+      { label: "VPD (kPa)", data: rows.map(r => r.vpd_kpa), borderColor: "#e2574c", tension: 0.3, yAxisID: "y1" },
     ],
   };
 
@@ -160,9 +166,16 @@ async function refreshHistory() {
       y1: { type: "linear", position: "right", title: { display: true, text: "%" }, grid: { drawOnChartArea: false } },
     },
   };
+  const climateOpts = {
+    ...opts,
+    scales: {
+      y: { type: "linear", position: "left", title: { display: true, text: "°C / %" } },
+      y1: { type: "linear", position: "right", title: { display: true, text: "VPD (kPa)" }, grid: { drawOnChartArea: false } },
+    },
+  };
 
   if (climateChart) { climateChart.data = climateData; climateChart.update(); }
-  else climateChart = new Chart(document.getElementById("climateChart"), { type: "line", data: climateData, options: opts });
+  else climateChart = new Chart(document.getElementById("climateChart"), { type: "line", data: climateData, options: climateOpts });
 
   if (irrigationChart) { irrigationChart.data = irrigationData; irrigationChart.update(); }
   else irrigationChart = new Chart(document.getElementById("irrigationChart"), { type: "line", data: irrigationData, options: irrigationOpts });
