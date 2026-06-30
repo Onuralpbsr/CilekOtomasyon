@@ -23,6 +23,7 @@ db.exec(`
     soil_moisture_pct REAL,
     flow_in_l REAL,
     flow_drain_l REAL,
+    runoff_pct REAL,
     pump_voltage REAL,
     pump_current_a REAL,
     pump_power_w REAL,
@@ -43,11 +44,11 @@ db.exec(`
 const insertStmt = db.prepare(`
   INSERT INTO readings (
     ts, ambient_temp, ambient_hum, pressure_hpa, sht1_temp, sht1_hum, sht2_temp, sht2_hum, lux,
-    nutrient_temp, rootzone_temp, soil_moisture_pct, flow_in_l, flow_drain_l,
+    nutrient_temp, rootzone_temp, soil_moisture_pct, flow_in_l, flow_drain_l, runoff_pct,
     pump_voltage, pump_current_a, pump_power_w,
     ac_voltage, ac_current_a, ac_power_w, ac_energy_kwh, ac_frequency, ac_power_factor,
     water_level_ok, pump_fault, water_low_fault, stage
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
 function n(v) {
@@ -70,6 +71,7 @@ function insertReading(status) {
     n(status.root?.soilMoisturePct),
     n(status.irrigation?.flowInLitresToday),
     n(status.irrigation?.flowDrainLitresToday),
+    n(status.irrigation?.runoffPctToday),
     n(status.power?.pumpVoltage),
     n(status.power?.pumpCurrentA),
     n(status.power?.pumpPowerW),

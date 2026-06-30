@@ -64,6 +64,7 @@ async function refreshLive() {
       card("Sulama (Bugün)", fmt(status.irrigation.flowInLitresToday, 2), "L"),
       card("Drenaj (Bugün)", fmt(status.irrigation.flowDrainLitresToday, 2), "L"),
       card("Sulama Sayısı", status.irrigation.irrigationsToday, "kez"),
+      card("Drenaj Oranı", `${fmt(status.irrigation.runoffPctToday, 0)} / ${fmt(status.irrigation.runoffTargetPct, 0)}`, "% (gerçek/hedef)"),
     ].join("");
 
     document.getElementById("cardsPower").innerHTML = [
@@ -128,9 +129,10 @@ async function refreshHistory() {
   const irrigationData = {
     labels,
     datasets: [
-      { label: "Substrate Nem (%)", data: rows.map(r => r.soil_moisture_pct), borderColor: "#3498db", tension: 0.3 },
-      { label: "Sulama (L, kümülatif)", data: rows.map(r => r.flow_in_l), borderColor: "#9b59b6", tension: 0.3 },
-      { label: "Drenaj (L, kümülatif)", data: rows.map(r => r.flow_drain_l), borderColor: "#e67e22", tension: 0.3 },
+      { label: "Sulama (L, kümülatif)", data: rows.map(r => r.flow_in_l), borderColor: "#9b59b6", tension: 0.3, yAxisID: "y" },
+      { label: "Drenaj (L, kümülatif)", data: rows.map(r => r.flow_drain_l), borderColor: "#e67e22", tension: 0.3, yAxisID: "y" },
+      { label: "Substrat Nemi (%)", data: rows.map(r => r.soil_moisture_pct), borderColor: "#3498db", tension: 0.3, yAxisID: "y1" },
+      { label: "Drenaj Oranı (%)", data: rows.map(r => r.runoff_pct), borderColor: "#e2574c", tension: 0.3, yAxisID: "y1" },
     ],
   };
 
@@ -151,12 +153,19 @@ async function refreshHistory() {
   };
 
   const opts = { responsive: true, interaction: { mode: "index", intersect: false } };
+  const irrigationOpts = {
+    ...opts,
+    scales: {
+      y: { type: "linear", position: "left", title: { display: true, text: "Litre" } },
+      y1: { type: "linear", position: "right", title: { display: true, text: "%" }, grid: { drawOnChartArea: false } },
+    },
+  };
 
   if (climateChart) { climateChart.data = climateData; climateChart.update(); }
   else climateChart = new Chart(document.getElementById("climateChart"), { type: "line", data: climateData, options: opts });
 
   if (irrigationChart) { irrigationChart.data = irrigationData; irrigationChart.update(); }
-  else irrigationChart = new Chart(document.getElementById("irrigationChart"), { type: "line", data: irrigationData, options: opts });
+  else irrigationChart = new Chart(document.getElementById("irrigationChart"), { type: "line", data: irrigationData, options: irrigationOpts });
 
   if (lightChart) { lightChart.data = lightData; lightChart.update(); }
   else lightChart = new Chart(document.getElementById("lightChart"), { type: "line", data: lightData, options: opts });
