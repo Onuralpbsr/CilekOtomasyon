@@ -1,7 +1,7 @@
 #include "config.h"
 #include "sensors.h"
 #include "control.h"
-#include "network.h"
+#include "httpapi.h"
 #include "alerts.h"
 
 static SensorData sensorData;
