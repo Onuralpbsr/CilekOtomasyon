@@ -5,7 +5,7 @@ const RELAYS = [
   { key: "climate", label: "Isıtıcı/Nem" },
 ];
 
-let climateChart, irrigationChart;
+let climateChart, irrigationChart, lightChart, powerChart;
 
 function card(label, value, unit) {
   return `<div class="card"><div class="label">${label}</div><div class="value">${value}<span class="unit"> ${unit || ""}</span></div></div>`;
@@ -31,8 +31,13 @@ async function refreshLive() {
 
     const cards = document.getElementById("cards");
     cards.innerHTML = [
-      card("Ortam Sıcaklık", fmt(status.climate.ambientTempBME), "°C"),
-      card("Ortam Nem", fmt(status.climate.ambientHumBME), "%"),
+      card("Ortam Sıcaklık (BME280)", fmt(status.climate.ambientTempBME), "°C"),
+      card("Ortam Nem (BME280)", fmt(status.climate.ambientHumBME), "%"),
+      card("Basınç", fmt(status.climate.pressureHPa, 0), "hPa"),
+      card("SHT30 #1 Sıcaklık", fmt(status.climate.tempSHT1), "°C"),
+      card("SHT30 #1 Nem", fmt(status.climate.humSHT1), "%"),
+      card("SHT30 #2 Sıcaklık", fmt(status.climate.tempSHT2), "°C"),
+      card("SHT30 #2 Nem", fmt(status.climate.humSHT2), "%"),
       card("Işık", fmt(status.climate.lux, 0), "lux"),
       card("Besin Sıcaklığı", fmt(status.root.nutrientTempC), "°C"),
       card("Kök Bölgesi Sıcaklığı", fmt(status.root.rootZoneTempC), "°C"),
@@ -40,8 +45,15 @@ async function refreshLive() {
       card("Sulama (Bugün)", fmt(status.irrigation.flowInLitresToday, 2), "L"),
       card("Drenaj (Bugün)", fmt(status.irrigation.flowDrainLitresToday, 2), "L"),
       card("Sulama Sayısı", status.irrigation.irrigationsToday, "kez"),
+      card("Pompa Voltajı", fmt(status.power.pumpVoltage, 2), "V"),
       card("Pompa Akımı", fmt(status.power.pumpCurrentA, 2), "A"),
+      card("Pompa Güç", fmt(status.power.pumpPowerW, 1), "W"),
+      card("AC Voltaj", fmt(status.power.acVoltage, 0), "V"),
+      card("AC Akım", fmt(status.power.acCurrentA, 2), "A"),
       card("AC Güç", fmt(status.power.acPowerW, 0), "W"),
+      card("AC Enerji (toplam)", fmt(status.power.acEnergyKWh, 3), "kWh"),
+      card("AC Frekans", fmt(status.power.acFrequency, 0), "Hz"),
+      card("AC Güç Faktörü", fmt(status.power.acPowerFactor, 2), ""),
       card("Su Seviyesi", status.irrigation.waterLevelOk ? "Normal" : "DÜŞÜK", ""),
     ].join("");
 
@@ -84,9 +96,12 @@ async function refreshHistory() {
   const climateData = {
     labels,
     datasets: [
-      { label: "Ortam Sıcaklık (°C)", data: rows.map(r => r.ambient_temp), borderColor: "#e0418f", tension: 0.3 },
-      { label: "Ortam Nem (%)", data: rows.map(r => r.ambient_hum), borderColor: "#4caf6d", tension: 0.3 },
+      { label: "Ortam Sıcaklık BME280 (°C)", data: rows.map(r => r.ambient_temp), borderColor: "#e0418f", tension: 0.3 },
+      { label: "Ortam Nem BME280 (%)", data: rows.map(r => r.ambient_hum), borderColor: "#4caf6d", tension: 0.3 },
+      { label: "SHT30 #1 (°C)", data: rows.map(r => r.sht1_temp), borderColor: "#9b59b6", tension: 0.3 },
+      { label: "SHT30 #2 (°C)", data: rows.map(r => r.sht2_temp), borderColor: "#3498db", tension: 0.3 },
       { label: "Kök Bölgesi (°C)", data: rows.map(r => r.rootzone_temp), borderColor: "#f1c40f", tension: 0.3 },
+      { label: "Besin Çözeltisi (°C)", data: rows.map(r => r.nutrient_temp), borderColor: "#e67e22", tension: 0.3 },
     ],
   };
 
@@ -99,6 +114,22 @@ async function refreshHistory() {
     ],
   };
 
+  const lightData = {
+    labels,
+    datasets: [
+      { label: "Işık (lux)", data: rows.map(r => r.lux), borderColor: "#f1c40f", tension: 0.3 },
+    ],
+  };
+
+  const powerData = {
+    labels,
+    datasets: [
+      { label: "Pompa Akımı (A)", data: rows.map(r => r.pump_current_a), borderColor: "#e0418f", tension: 0.3 },
+      { label: "AC Güç (W)", data: rows.map(r => r.ac_power_w), borderColor: "#4caf6d", tension: 0.3 },
+      { label: "AC Enerji (kWh, kümülatif)", data: rows.map(r => r.ac_energy_kwh), borderColor: "#3498db", tension: 0.3 },
+    ],
+  };
+
   const opts = { responsive: true, interaction: { mode: "index", intersect: false } };
 
   if (climateChart) { climateChart.data = climateData; climateChart.update(); }
@@ -106,6 +137,12 @@ async function refreshHistory() {
 
   if (irrigationChart) { irrigationChart.data = irrigationData; irrigationChart.update(); }
   else irrigationChart = new Chart(document.getElementById("irrigationChart"), { type: "line", data: irrigationData, options: opts });
+
+  if (lightChart) { lightChart.data = lightData; lightChart.update(); }
+  else lightChart = new Chart(document.getElementById("lightChart"), { type: "line", data: lightData, options: opts });
+
+  if (powerChart) { powerChart.data = powerData; powerChart.update(); }
+  else powerChart = new Chart(document.getElementById("powerChart"), { type: "line", data: powerData, options: opts });
 }
 
 refreshLive();

@@ -12,6 +12,7 @@ db.exec(`
     ts INTEGER NOT NULL,
     ambient_temp REAL,
     ambient_hum REAL,
+    pressure_hpa REAL,
     sht1_temp REAL,
     sht1_hum REAL,
     sht2_temp REAL,
@@ -22,9 +23,15 @@ db.exec(`
     soil_moisture_pct REAL,
     flow_in_l REAL,
     flow_drain_l REAL,
+    pump_voltage REAL,
     pump_current_a REAL,
+    pump_power_w REAL,
+    ac_voltage REAL,
+    ac_current_a REAL,
     ac_power_w REAL,
     ac_energy_kwh REAL,
+    ac_frequency REAL,
+    ac_power_factor REAL,
     water_level_ok INTEGER,
     pump_fault INTEGER,
     water_low_fault INTEGER,
@@ -35,10 +42,12 @@ db.exec(`
 
 const insertStmt = db.prepare(`
   INSERT INTO readings (
-    ts, ambient_temp, ambient_hum, sht1_temp, sht1_hum, sht2_temp, sht2_hum, lux,
+    ts, ambient_temp, ambient_hum, pressure_hpa, sht1_temp, sht1_hum, sht2_temp, sht2_hum, lux,
     nutrient_temp, rootzone_temp, soil_moisture_pct, flow_in_l, flow_drain_l,
-    pump_current_a, ac_power_w, ac_energy_kwh, water_level_ok, pump_fault, water_low_fault, stage
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    pump_voltage, pump_current_a, pump_power_w,
+    ac_voltage, ac_current_a, ac_power_w, ac_energy_kwh, ac_frequency, ac_power_factor,
+    water_level_ok, pump_fault, water_low_fault, stage
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
 function n(v) {
@@ -50,6 +59,7 @@ function insertReading(status) {
     Date.now(),
     n(status.climate?.ambientTempBME),
     n(status.climate?.ambientHumBME),
+    n(status.climate?.pressureHPa),
     n(status.climate?.tempSHT1),
     n(status.climate?.humSHT1),
     n(status.climate?.tempSHT2),
@@ -60,9 +70,15 @@ function insertReading(status) {
     n(status.root?.soilMoisturePct),
     n(status.irrigation?.flowInLitresToday),
     n(status.irrigation?.flowDrainLitresToday),
+    n(status.power?.pumpVoltage),
     n(status.power?.pumpCurrentA),
+    n(status.power?.pumpPowerW),
+    n(status.power?.acVoltage),
+    n(status.power?.acCurrentA),
     n(status.power?.acPowerW),
     n(status.power?.acEnergyKWh),
+    n(status.power?.acFrequency),
+    n(status.power?.acPowerFactor),
     status.irrigation?.waterLevelOk ? 1 : 0,
     status.faults?.pumpFault ? 1 : 0,
     status.faults?.waterLowFault ? 1 : 0,

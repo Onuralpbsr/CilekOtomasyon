@@ -46,6 +46,8 @@ static void handleStatus() {
   doc["power"]["acCurrentA"] = gData->acCurrentA;
   doc["power"]["acPowerW"] = gData->acPowerW;
   doc["power"]["acEnergyKWh"] = gData->acEnergyKWh;
+  doc["power"]["acFrequency"] = gData->acFrequency;
+  doc["power"]["acPowerFactor"] = gData->acPowerFactor;
 
   doc["relays"]["pump"] = gState->pumpOn;
   doc["relays"]["fan"] = gState->fanOn;
