@@ -44,6 +44,7 @@ brew install --cask arduino-ide >/dev/null 2>&1 || echo "Arduino IDE zaten kurul
 step "arduino-cli yapılandırması"
 arduino-cli config init --overwrite >/dev/null 2>&1 || true
 arduino-cli config set board_manager.additional_urls "$ESP32_BOARD_URL" >/dev/null
+arduino-cli config set directories.user "$SKETCHBOOK_DIR" >/dev/null
 
 step "ESP32 board paketi kuruluyor (ilk kurulumda birkaç dakika sürebilir)"
 arduino-cli core update-index >/dev/null
