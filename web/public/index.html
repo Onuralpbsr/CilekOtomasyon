@@ -11,7 +11,10 @@
 <div class="container">
 
   <header>
-    <h1>🍓 Çilek Otomasyon</h1>
+    <div>
+      <h1>🍓 Çilek Otomasyon</h1>
+      <p class="subtitle">Canlı sera izleme ve kontrol paneli</p>
+    </div>
     <div id="connStatus" class="badge">Bağlanıyor...</div>
   </header>
 
@@ -63,24 +66,7 @@
 
   <section class="panel" id="gecmis">
     <h2>Geçmiş (24 saat)</h2>
-    <div class="chart-grid">
-      <div class="chart-box">
-        <h3>Sıcaklık / Nem / VPD</h3>
-        <canvas id="climateChart" height="160"></canvas>
-      </div>
-      <div class="chart-box">
-        <h3>Sulama / Drenaj Oranı</h3>
-        <canvas id="irrigationChart" height="160"></canvas>
-      </div>
-      <div class="chart-box">
-        <h3>Işık</h3>
-        <canvas id="lightChart" height="160"></canvas>
-      </div>
-      <div class="chart-box">
-        <h3>Güç / Enerji</h3>
-        <canvas id="powerChart" height="160"></canvas>
-      </div>
-    </div>
+    <div id="historyCharts"></div>
   </section>
 
 </div>

@@ -7,7 +7,28 @@ const RELAYS = [
 
 const STAGE_NAMES = ["Fide", "Vegetatif", "Çiçek", "Meyve"];
 
-let climateChart, irrigationChart, lightChart, powerChart;
+// Her grafik tek bir veri serisi gösterir - kategori başlığı altında gruplanır.
+const CHART_DEFS = [
+  { id: "chartAmbientTemp", group: "İklim", title: "Ortam Sıcaklık (BME280)", unit: "°C", field: "ambient_temp", color: "#e0418f" },
+  { id: "chartAmbientHum", group: "İklim", title: "Ortam Nem (BME280)", unit: "%", field: "ambient_hum", color: "#4caf6d" },
+  { id: "chartSht1Temp", group: "İklim", title: "SHT30 #1 Sıcaklık", unit: "°C", field: "sht1_temp", color: "#9b59b6" },
+  { id: "chartSht1Hum", group: "İklim", title: "SHT30 #1 Nem", unit: "%", field: "sht1_hum", color: "#9b59b6" },
+  { id: "chartSht2Temp", group: "İklim", title: "SHT30 #2 Sıcaklık", unit: "°C", field: "sht2_temp", color: "#3498db" },
+  { id: "chartSht2Hum", group: "İklim", title: "SHT30 #2 Nem", unit: "%", field: "sht2_hum", color: "#3498db" },
+  { id: "chartLux", group: "İklim", title: "Işık", unit: "lux", field: "lux", color: "#f1c40f" },
+  { id: "chartVpd", group: "İklim", title: "VPD", unit: "kPa", field: "vpd_kpa", color: "#e2574c" },
+  { id: "chartRootTemp", group: "Kök & Substrat", title: "Kök Bölgesi Sıcaklığı", unit: "°C", field: "rootzone_temp", color: "#f1c40f" },
+  { id: "chartNutrientTemp", group: "Kök & Substrat", title: "Besin Çözeltisi Sıcaklığı", unit: "°C", field: "nutrient_temp", color: "#e67e22" },
+  { id: "chartSoilMoisture", group: "Kök & Substrat", title: "Substrat Nemi", unit: "%", field: "soil_moisture_pct", color: "#3498db" },
+  { id: "chartFlowIn", group: "Sulama", title: "Sulama", unit: "L", field: "flow_in_l", color: "#9b59b6" },
+  { id: "chartFlowDrain", group: "Sulama", title: "Drenaj", unit: "L", field: "flow_drain_l", color: "#e67e22" },
+  { id: "chartRunoff", group: "Sulama", title: "Drenaj Oranı", unit: "%", field: "runoff_pct", color: "#e2574c" },
+  { id: "chartPumpCurrent", group: "Güç", title: "Pompa Akımı", unit: "A", field: "pump_current_a", color: "#e0418f" },
+  { id: "chartAcPower", group: "Güç", title: "AC Güç", unit: "W", field: "ac_power_w", color: "#4caf6d" },
+  { id: "chartAcEnergy", group: "Güç", title: "AC Enerji", unit: "kWh", field: "ac_energy_kwh", color: "#3498db" },
+];
+
+const charts = {};
 
 function card(label, value, unit) {
   return `<div class="card"><div class="label">${label}</div><div class="value">${value}<span class="unit"> ${unit || ""}</span></div></div>`;
@@ -114,77 +135,57 @@ async function sendControl(body) {
 
 document.getElementById("clearFaultsBtn").onclick = () => sendControl({ clearFaults: true });
 
+function buildHistoryChartLayout() {
+  const container = document.getElementById("historyCharts");
+  const groups = [...new Set(CHART_DEFS.map(c => c.group))];
+  container.innerHTML = groups.map(group => `
+    <div class="chart-group">
+      <h3>${group}</h3>
+      <div class="chart-mini-grid">
+        ${CHART_DEFS.filter(c => c.group === group).map(c => `
+          <div class="chart-mini">
+            <div class="chart-mini-title">${c.title} <span class="unit">${c.unit}</span></div>
+            <canvas id="${c.id}" height="70"></canvas>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+function miniChartOptions() {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: false,
+    plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false } },
+    elements: { point: { radius: 0 } },
+    scales: {
+      x: { ticks: { maxTicksLimit: 4, font: { size: 10 } }, grid: { display: false } },
+      y: { ticks: { maxTicksLimit: 4, font: { size: 10 } } },
+    },
+  };
+}
+
 async function refreshHistory() {
+  if (!document.getElementById(CHART_DEFS[0].id)) buildHistoryChartLayout();
+
   const res = await fetch("/api/history?hours=24");
   const rows = await res.json();
   const labels = rows.map(r => new Date(r.ts).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }));
 
-  const climateData = {
-    labels,
-    datasets: [
-      { label: "Ortam Sıcaklık BME280 (°C)", data: rows.map(r => r.ambient_temp), borderColor: "#e0418f", tension: 0.3 },
-      { label: "Ortam Nem BME280 (%)", data: rows.map(r => r.ambient_hum), borderColor: "#4caf6d", tension: 0.3 },
-      { label: "SHT30 #1 (°C)", data: rows.map(r => r.sht1_temp), borderColor: "#9b59b6", tension: 0.3 },
-      { label: "SHT30 #2 (°C)", data: rows.map(r => r.sht2_temp), borderColor: "#3498db", tension: 0.3 },
-      { label: "Kök Bölgesi (°C)", data: rows.map(r => r.rootzone_temp), borderColor: "#f1c40f", tension: 0.3 },
-      { label: "Besin Çözeltisi (°C)", data: rows.map(r => r.nutrient_temp), borderColor: "#e67e22", tension: 0.3 },
-      { label: "VPD (kPa)", data: rows.map(r => r.vpd_kpa), borderColor: "#e2574c", tension: 0.3, yAxisID: "y1" },
-    ],
-  };
-
-  const irrigationData = {
-    labels,
-    datasets: [
-      { label: "Sulama (L, kümülatif)", data: rows.map(r => r.flow_in_l), borderColor: "#9b59b6", tension: 0.3, yAxisID: "y" },
-      { label: "Drenaj (L, kümülatif)", data: rows.map(r => r.flow_drain_l), borderColor: "#e67e22", tension: 0.3, yAxisID: "y" },
-      { label: "Substrat Nemi (%)", data: rows.map(r => r.soil_moisture_pct), borderColor: "#3498db", tension: 0.3, yAxisID: "y1" },
-      { label: "Drenaj Oranı (%)", data: rows.map(r => r.runoff_pct), borderColor: "#e2574c", tension: 0.3, yAxisID: "y1" },
-    ],
-  };
-
-  const lightData = {
-    labels,
-    datasets: [
-      { label: "Işık (lux)", data: rows.map(r => r.lux), borderColor: "#f1c40f", tension: 0.3 },
-    ],
-  };
-
-  const powerData = {
-    labels,
-    datasets: [
-      { label: "Pompa Akımı (A)", data: rows.map(r => r.pump_current_a), borderColor: "#e0418f", tension: 0.3 },
-      { label: "AC Güç (W)", data: rows.map(r => r.ac_power_w), borderColor: "#4caf6d", tension: 0.3 },
-      { label: "AC Enerji (kWh, kümülatif)", data: rows.map(r => r.ac_energy_kwh), borderColor: "#3498db", tension: 0.3 },
-    ],
-  };
-
-  const opts = { responsive: true, interaction: { mode: "index", intersect: false } };
-  const irrigationOpts = {
-    ...opts,
-    scales: {
-      y: { type: "linear", position: "left", title: { display: true, text: "Litre" } },
-      y1: { type: "linear", position: "right", title: { display: true, text: "%" }, grid: { drawOnChartArea: false } },
-    },
-  };
-  const climateOpts = {
-    ...opts,
-    scales: {
-      y: { type: "linear", position: "left", title: { display: true, text: "°C / %" } },
-      y1: { type: "linear", position: "right", title: { display: true, text: "VPD (kPa)" }, grid: { drawOnChartArea: false } },
-    },
-  };
-
-  if (climateChart) { climateChart.data = climateData; climateChart.update(); }
-  else climateChart = new Chart(document.getElementById("climateChart"), { type: "line", data: climateData, options: climateOpts });
-
-  if (irrigationChart) { irrigationChart.data = irrigationData; irrigationChart.update(); }
-  else irrigationChart = new Chart(document.getElementById("irrigationChart"), { type: "line", data: irrigationData, options: irrigationOpts });
-
-  if (lightChart) { lightChart.data = lightData; lightChart.update(); }
-  else lightChart = new Chart(document.getElementById("lightChart"), { type: "line", data: lightData, options: opts });
-
-  if (powerChart) { powerChart.data = powerData; powerChart.update(); }
-  else powerChart = new Chart(document.getElementById("powerChart"), { type: "line", data: powerData, options: opts });
+  CHART_DEFS.forEach(c => {
+    const data = {
+      labels,
+      datasets: [{ data: rows.map(r => r[c.field]), borderColor: c.color, tension: 0.3, borderWidth: 1.5 }],
+    };
+    if (charts[c.id]) {
+      charts[c.id].data = data;
+      charts[c.id].update();
+    } else {
+      charts[c.id] = new Chart(document.getElementById(c.id), { type: "line", data, options: miniChartOptions() });
+    }
+  });
 }
 
 refreshLive();
