@@ -15,48 +15,61 @@
     <div id="connStatus" class="badge">Bağlanıyor...</div>
   </header>
 
-  <section class="status-strip" id="statusStrip"></section>
+  <nav class="quicknav" aria-label="Hızlı gezinme">
+    <a href="#durum">Durum</a>
+    <a href="#iklim">İklim</a>
+    <a href="#kok-substrat">Kök &amp; Substrat</a>
+    <a href="#sulama">Sulama</a>
+    <a href="#guc">Güç</a>
+    <a href="#role">Röle</a>
+    <a href="#uyarilar">Uyarılar</a>
+    <a href="#gecmis">Geçmiş</a>
+  </nav>
 
-  <section class="panel">
+  <section class="status-strip" id="durum">
+    <div id="statusStrip"></div>
+  </section>
+
+  <section class="panel" id="iklim">
     <h2>İklim</h2>
     <div class="grid" id="cardsClimate"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="kok-substrat">
     <h2>Kök &amp; Substrat</h2>
     <div class="grid" id="cardsRoot"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="sulama">
     <h2>Sulama</h2>
     <div class="grid" id="cardsIrrigation"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="guc">
     <h2>Güç</h2>
     <div class="grid" id="cardsPower"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="role">
     <h2>Röle Kontrolü</h2>
     <div class="relays" id="relayControls"></div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="uyarilar">
     <h2>Uyarılar</h2>
     <div id="alarms"></div>
     <button id="clearFaultsBtn">Arızaları Temizle</button>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="gecmis">
     <h2>Geçmiş (24 saat)</h2>
     <div class="chart-grid">
       <div class="chart-box">
-        <h3>Sıcaklık / Nem</h3>
+        <h3>Sıcaklık / Nem / VPD</h3>
         <canvas id="climateChart" height="160"></canvas>
       </div>
       <div class="chart-box">
-        <h3>Sulama</h3>
+        <h3>Sulama / Drenaj Oranı</h3>
         <canvas id="irrigationChart" height="160"></canvas>
       </div>
       <div class="chart-box">
