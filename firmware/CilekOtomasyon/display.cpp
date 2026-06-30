@@ -52,11 +52,16 @@ void displayUpdate(const SensorData &d, const ControlState &s) {
   display.print("Su seviyesi: ");
   display.println(d.waterLevelOk ? "Normal" : "DUSUK");
 
-  display.print("Pompa:");
-  display.print(s.pumpOn ? "ON " : "OFF ");
-  display.print("Fan:");
-  display.println(s.fanOn ? "ON" : "OFF");
+  display.print("Pompa: ");
+  display.println(s.pumpOn ? "ON" : "OFF");
 
+  display.print("VPD: ");
+  display.print(s.vpdKPa, 2);
+  display.println(" kPa");
+
+  if (s.climateAlertActive) {
+    display.println("!! IKLIM UYARISI !!");
+  }
   if (s.pumpFault || s.waterLowFault) {
     display.println("!! ARIZA VAR !!");
   }

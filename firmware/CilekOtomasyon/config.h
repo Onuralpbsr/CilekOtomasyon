@@ -39,9 +39,9 @@
 
 // ---------- Röle kartı (4 kanal, aktif LOW çoğu modülde) ----------
 #define PIN_RELAY_PUMP      15
-#define PIN_RELAY_FAN       16
+#define PIN_RELAY_FAN       16  // boşta/manuel - fiziksel fan yok, otomatik sürülmüyor
 #define PIN_RELAY_LIGHT     17
-#define PIN_RELAY_CLIMATE   18  // ısıtıcı/nemlendirici
+#define PIN_RELAY_CLIMATE   18  // boşta/manuel - fiziksel ısıtıcı/nemlendirici yok, otomatik sürülmüyor
 #define RELAY_ACTIVE_LOW    true
 
 // ---------- SIM800L (UART1) ----------

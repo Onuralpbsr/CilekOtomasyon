@@ -8,9 +8,13 @@ struct ControlState {
   GrowthStage stage = STAGE_VEGETATIVE;
 
   bool pumpOn = false;
-  bool fanOn = false;
   bool lightOn = false;
-  bool climateOn = false;
+
+  // Fiziksel fan/ısıtıcı/nemlendirici yok. Bu iki röle kanalı şu an
+  // boşta/manuel; ileride bir cihaz takılırsa controlManualOverride ile
+  // kullanılabilir ama otomatik mantık tarafından sürülmüyor.
+  bool spareRelay2On = false;
+  bool spareRelay3On = false;
 
   uint16_t irrigationsToday = 0;
   bool irrigationInProgress = false;
@@ -21,6 +25,11 @@ struct ControlState {
   bool waterLowFault = false;   // şamandıra düşük seviye kilidi
 
   float runoffPctToday = NAN;   // bugünkü gerçek drenaj/giriş oranı (%), STAGE_PARAMS.targetRunoffPct ile karşılaştırılır
+
+  // İklim için aktüatör olmadığından otomatik düzeltme yapılmaz; sadece
+  // hedef aralığın dışına çıkınca SMS ile bildirilir.
+  bool climateAlertActive = false;
+  float vpdKPa = NAN;            // buhar basıncı açığı (kPa) - sıcaklık+nemden hesaplanan bilgilendirici metrik
 
   String lastAlarm = "";
 };

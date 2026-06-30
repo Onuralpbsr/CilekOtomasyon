@@ -129,7 +129,26 @@ static void updateWaterLevel(const SensorData &d, ControlState &s) {
   }
 }
 
-static void updateClimate(const SensorData &d, ControlState &s) {
+static void updateLight(const SensorData &d, ControlState &s) {
+  s.lightOn = isLightHour(d.hour, d.minute);
+  setRelay(PIN_RELAY_LIGHT, s.lightOn);
+}
+
+// Buhar basıncı açığı (VPD, kPa) - sıcaklık ve bağıl nemden hesaplanan,
+// bitkinin terlemesini tek sayıda özetleyen bilgilendirici metrik.
+// Sadece izleme amaçlı; otomatik bir aksiyona bağlı değil.
+static float calcVpdKPa(float tempC, float rhPct) {
+  if (isnan(tempC) || isnan(rhPct)) return NAN;
+  float svpKPa = 0.6108f * expf((17.27f * tempC) / (tempC + 237.3f));
+  return svpKPa * (1.0f - rhPct / 100.0f);
+}
+
+// Fiziksel fan/ısıtıcı/nemlendirici YOK, dolayısıyla iklim için otomatik
+// düzeltme yapılamaz. Bu fonksiyon sadece izler: sıcaklık/nem/kök bölgesi
+// sıcaklığı hedef aralığın dışına çıkarsa bir kere SMS gönderir, aralığa
+// dönünce otomatik temizlenir (pompa arızaları gibi manuel temizlik
+// gerektirmez, çünkü kilitlenen bir donanım yok).
+static void updateClimateMonitoring(const SensorData &d, ControlState &s) {
   bool daytime = isLightHour(d.hour, d.minute);
   float tempRef = bestAmbientTemp(d);
   float rhRef = bestAmbientHum(d);
@@ -137,24 +156,24 @@ static void updateClimate(const SensorData &d, ControlState &s) {
   float tempMax = daytime ? TEMP_DAY_MAX : TEMP_NIGHT_MAX;
   float tempMin = daytime ? TEMP_DAY_MIN : TEMP_NIGHT_MIN;
 
-  if (!isnan(tempRef)) {
-    if (tempRef > tempMax) s.fanOn = true;
-    else if (tempRef < tempMin) s.fanOn = false;
-  }
-  setRelay(PIN_RELAY_FAN, s.fanOn);
+  s.vpdKPa = calcVpdKPa(tempRef, rhRef);
 
-  if (!isnan(rhRef)) {
-    if (rhRef > RH_MAX) s.climateOn = false;       // nem fazlaysa nemlendirme kapat
-    else if (rhRef < RH_MIN) s.climateOn = true;   // nem azsa aç
-  }
-  if (!isnan(d.rootZoneTemp)) {
-    if (d.rootZoneTemp < ROOTZONE_TEMP_MIN) s.climateOn = true;
-    if (d.rootZoneTemp > ROOTZONE_TEMP_MAX) s.climateOn = false;
-  }
-  setRelay(PIN_RELAY_CLIMATE, s.climateOn);
+  bool tempBad = !isnan(tempRef) && (tempRef > tempMax || tempRef < tempMin);
+  bool rhBad = !isnan(rhRef) && (rhRef > RH_MAX || rhRef < RH_MIN);
+  bool rootBad = !isnan(d.rootZoneTemp) && (d.rootZoneTemp > ROOTZONE_TEMP_MAX || d.rootZoneTemp < ROOTZONE_TEMP_MIN);
+  bool alertNow = tempBad || rhBad || rootBad;
 
-  s.lightOn = daytime;
-  setRelay(PIN_RELAY_LIGHT, s.lightOn);
+  if (alertNow && !s.climateAlertActive) {
+    s.climateAlertActive = true;
+    String msg = "Iklim uyarisi (fan/isitici yok, manuel mudahale gerekebilir):";
+    if (tempBad) msg += " sicaklik " + String(tempRef, 1) + "C;";
+    if (rhBad) msg += " nem " + String(rhRef, 1) + "%;";
+    if (rootBad) msg += " kok bolgesi " + String(d.rootZoneTemp, 1) + "C;";
+    s.lastAlarm = msg;
+    alertsSendSMS(msg);
+  } else if (!alertNow) {
+    s.climateAlertActive = false;
+  }
 }
 
 void controlManualOverride(ControlState &s, const String &relay, bool on) {
@@ -163,9 +182,12 @@ void controlManualOverride(ControlState &s, const String &relay, bool on) {
     setRelay(PIN_RELAY_PUMP, on);
     s.pumpOn = on;
   }
-  else if (relay == "fan") { setRelay(PIN_RELAY_FAN, on); s.fanOn = on; }
   else if (relay == "light") { setRelay(PIN_RELAY_LIGHT, on); s.lightOn = on; }
-  else if (relay == "climate") { setRelay(PIN_RELAY_CLIMATE, on); s.climateOn = on; }
+  // relay2/relay3: şu an fiziksel cihaz bağlı değil (fan/ısıtıcı/nemlendirici
+  // satın alınmadı). Röleyi yine de anahtarlıyoruz ki ileride bir cihaz
+  // takıldığında ya da test amaçlı kullanmak istendiğinde panelden erişilebilsin.
+  else if (relay == "relay2") { setRelay(PIN_RELAY_FAN, on); s.spareRelay2On = on; }
+  else if (relay == "relay3") { setRelay(PIN_RELAY_CLIMATE, on); s.spareRelay3On = on; }
 }
 
 void controlUpdate(const SensorData &d, ControlState &s) {
@@ -173,6 +195,7 @@ void controlUpdate(const SensorData &d, ControlState &s) {
   updateWaterLevel(d, s);
   updatePumpSafety(d, s);
   updateIrrigation(d, s);
-  updateClimate(d, s);
+  updateLight(d, s);
+  updateClimateMonitoring(d, s);
   updateRunoff(d, s);
 }

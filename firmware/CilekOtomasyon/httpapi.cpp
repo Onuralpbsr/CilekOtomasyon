@@ -28,6 +28,8 @@ static void handleStatus() {
   doc["climate"]["tempSHT2"] = gData->tempSHT2;
   doc["climate"]["humSHT2"] = gData->humSHT2;
   doc["climate"]["lux"] = gData->lux;
+  doc["climate"]["vpdKPa"] = gState->vpdKPa;
+  doc["climate"]["alertActive"] = gState->climateAlertActive;
 
   doc["root"]["nutrientTempC"] = gData->nutrientTemp;
   doc["root"]["rootZoneTempC"] = gData->rootZoneTemp;
@@ -52,9 +54,10 @@ static void handleStatus() {
   doc["power"]["acPowerFactor"] = gData->acPowerFactor;
 
   doc["relays"]["pump"] = gState->pumpOn;
-  doc["relays"]["fan"] = gState->fanOn;
   doc["relays"]["light"] = gState->lightOn;
-  doc["relays"]["climate"] = gState->climateOn;
+  // relay2/relay3: fan/ısıtıcı/nemlendirici donanımı yok, şu an boşta/manuel.
+  doc["relays"]["relay2"] = gState->spareRelay2On;
+  doc["relays"]["relay3"] = gState->spareRelay3On;
 
   doc["faults"]["pumpFault"] = gState->pumpFault;
   doc["faults"]["waterLowFault"] = gState->waterLowFault;
