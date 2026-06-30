@@ -1,8 +1,8 @@
+// Sadece fiziksel olarak bağlı/kullanılan röleler gösterilir. relay1/relay2/relay3
+// hiçbir cihaza bağlı değil; firmware'de hâlâ /api/control ile erişilebilirler
+// ama kullanılmadıkları için panelde gösterilmiyorlar.
 const RELAYS = [
   { key: "pump", label: "Pompa" },
-  { key: "relay1", label: "Röle 1 (boşta)" },
-  { key: "relay2", label: "Röle 2 (boşta)" },
-  { key: "relay3", label: "Röle 3 (boşta)" },
 ];
 
 const STAGE_NAMES = ["Fide", "Vegetatif", "Çiçek", "Meyve"];
