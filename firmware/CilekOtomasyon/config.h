@@ -16,6 +16,11 @@
 #define SHT30_ADDR_1     0x44
 #define SHT30_ADDR_2     0x45
 
+// OLED SSD1306, aynı I2C bus'ta. Çoğu 128x64 modülde adres 0x3C'dir (bazı 128x32 varyantları 0x3D olabilir).
+#define SCREEN_WIDTH     128
+#define SCREEN_HEIGHT    64
+#define SSD1306_I2C_ADDR 0x3C
+
 // ---------- OneWire (DS18B20 x2, aynı hat) ----------
 #define PIN_ONEWIRE      4
 

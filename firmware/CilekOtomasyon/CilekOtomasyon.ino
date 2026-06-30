@@ -3,6 +3,7 @@
 #include "control.h"
 #include "httpapi.h"
 #include "alerts.h"
+#include "display.h"
 
 static SensorData sensorData;
 static ControlState controlState;
@@ -16,6 +17,7 @@ void setup() {
   Serial.begin(115200);
 
   sensorsInit();
+  displayInit();
   controlInit();
   alertsInit();
   networkInit();
@@ -39,6 +41,7 @@ void loop() {
     }
 
     controlUpdate(sensorData, controlState);
+    displayUpdate(sensorData, controlState);
   }
 
   alertsLoop();
