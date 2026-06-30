@@ -145,7 +145,7 @@ function buildHistoryChartLayout() {
         ${CHART_DEFS.filter(c => c.group === group).map(c => `
           <div class="chart-mini">
             <div class="chart-mini-title">${c.title} <span class="unit">${c.unit}</span></div>
-            <canvas id="${c.id}" height="70"></canvas>
+            <div class="chart-mini-canvas"><canvas id="${c.id}"></canvas></div>
           </div>
         `).join("")}
       </div>

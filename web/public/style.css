@@ -203,3 +203,4 @@ button#clearFaultsBtn:hover { border-color: var(--danger); color: var(--danger);
   margin-bottom: 6px;
 }
 .chart-mini-title .unit { color: var(--muted); font-weight: 400; }
+.chart-mini-canvas { position: relative; height: 80px; }
