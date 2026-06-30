@@ -20,6 +20,8 @@ struct ControlState {
   bool pumpFault = false;       // aşırı/düşük akım kaynaklı kilit
   bool waterLowFault = false;   // şamandıra düşük seviye kilidi
 
+  float runoffPctToday = NAN;   // bugünkü gerçek drenaj/giriş oranı (%), STAGE_PARAMS.targetRunoffPct ile karşılaştırılır
+
   String lastAlarm = "";
 };
 

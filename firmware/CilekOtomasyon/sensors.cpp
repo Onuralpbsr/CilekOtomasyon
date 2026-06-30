@@ -127,3 +127,21 @@ void sensorsRead(SensorData &d) {
 
   d.valid = true;
 }
+
+static float averageValid(float a, float b) {
+  bool aOk = !isnan(a), bOk = !isnan(b);
+  if (aOk && bOk) return (a + b) / 2.0f;
+  if (aOk) return a;
+  if (bOk) return b;
+  return NAN;
+}
+
+float bestAmbientTemp(const SensorData &d) {
+  if (!isnan(d.ambientTempBME)) return d.ambientTempBME;
+  return averageValid(d.tempSHT1, d.tempSHT2);
+}
+
+float bestAmbientHum(const SensorData &d) {
+  if (!isnan(d.ambientHumBME)) return d.ambientHumBME;
+  return averageValid(d.humSHT1, d.humSHT2);
+}

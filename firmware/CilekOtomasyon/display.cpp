@@ -26,8 +26,8 @@ void displayInit() {
 void displayUpdate(const SensorData &d, const ControlState &s) {
   if (!displayOk) return;
 
-  float tempRef = !isnan(d.ambientTempBME) ? d.ambientTempBME : d.tempSHT1;
-  float humRef = !isnan(d.ambientHumBME) ? d.ambientHumBME : d.humSHT1;
+  float tempRef = bestAmbientTemp(d);
+  float humRef = bestAmbientHum(d);
 
   display.clearDisplay();
   display.setTextSize(1);

@@ -52,3 +52,8 @@ struct SensorData {
 void sensorsInit();
 void sensorsRead(SensorData &data);
 void sensorsResetDailyCounters();
+
+// BME280 önceliklidir; BME280 yoksa geçerli olan SHT30'ların ortalaması,
+// sadece biri geçerliyse o değer döner. İkisi de yoksa NAN.
+float bestAmbientTemp(const SensorData &data);
+float bestAmbientHum(const SensorData &data);

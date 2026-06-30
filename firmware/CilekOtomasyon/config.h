@@ -61,18 +61,19 @@
 // ================= AGRONOMİK EŞİKLER =================
 // Evre: 0=Fide, 1=Vegetatif, 2=Çiçek, 3=Meyve
 struct StageThresholds {
-  float soilMoistureMin;   // % - bunun altına düşünce sula
-  float soilMoistureMax;   // % - hedef üst sınır
-  float targetRunoffPct;   // drenaj/giriş oranı hedefi
+  float soilMoistureMin;     // % - bunun altına düşünce sula
+  float soilMoistureMax;     // % - hedef üst sınır
+  float targetRunoffPct;     // drenaj/giriş oranı hedefi
   uint16_t maxIrrigationsPerDay;
+  float pulseVolumeLitres;   // tek sulama darbesinde verilecek hacim (bitki/kök hacmiyle birlikte büyür)
 };
 
 static const StageThresholds STAGE_PARAMS[4] = {
-  // soilMin, soilMax, runoff%, maxSulamaSayisi
-  {70.0f, 75.0f, 12.5f, 3},   // Fide
-  {65.0f, 70.0f, 17.5f, 6},   // Vegetatif
-  {60.0f, 65.0f, 22.5f, 8},   // Çiçek
-  {55.0f, 65.0f, 27.5f, 12},  // Meyve
+  // soilMin, soilMax, runoff%, maxSulamaSayisi, pulseLitre
+  {70.0f, 75.0f, 12.5f, 3,  0.15f},   // Fide
+  {65.0f, 70.0f, 17.5f, 6,  0.25f},   // Vegetatif
+  {60.0f, 65.0f, 22.5f, 8,  0.35f},   // Çiçek
+  {55.0f, 65.0f, 27.5f, 12, 0.45f},   // Meyve
 };
 
 // İklim hedefleri (gündüz/gece ortak; basit tutuldu, evreye göre ince ayar koddan yapılabilir)
@@ -100,6 +101,5 @@ static const StageThresholds STAGE_PARAMS[4] = {
 #define PUMP_OVERCURRENT_RATIO   1.5f   // bu kat üstü = tıkanma/blokaj
 #define PUMP_UNDERCURRENT_RATIO  0.3f   // bu kat altı = kuru çalışma/hava
 
-// Tek sulama pulse hacmi (litre) ve zaman aşımı
-#define IRRIGATION_PULSE_LITRES   0.25f
+// Tek sulama darbesinin zaman aşımı (hacim STAGE_PARAMS.pulseVolumeLitres'ten gelir)
 #define IRRIGATION_TIMEOUT_MS     60000UL

@@ -38,6 +38,8 @@ static void handleStatus() {
   doc["irrigation"]["irrigationsToday"] = gState->irrigationsToday;
   doc["irrigation"]["inProgress"] = gState->irrigationInProgress;
   doc["irrigation"]["waterLevelOk"] = gData->waterLevelOk;
+  doc["irrigation"]["runoffPctToday"] = gState->runoffPctToday;
+  doc["irrigation"]["runoffTargetPct"] = STAGE_PARAMS[gState->stage].targetRunoffPct;
 
   doc["power"]["pumpVoltage"] = gData->pumpVoltage;
   doc["power"]["pumpCurrentA"] = gData->pumpCurrentA;
@@ -88,6 +90,8 @@ static void handleControl() {
 
 void networkInit() {
   WiFi.mode(WIFI_STA);
+  WiFi.setAutoReconnect(true);
+  WiFi.persistent(true);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
   unsigned long start = millis();
@@ -100,8 +104,23 @@ void networkInit() {
   server.begin();
 }
 
+static unsigned long lastWifiCheckMs = 0;
+static const unsigned long WIFI_CHECK_INTERVAL_MS = 30000;
+
+static void ensureWifiConnected() {
+  unsigned long now = millis();
+  if (now - lastWifiCheckMs < WIFI_CHECK_INTERVAL_MS) return;
+  lastWifiCheckMs = now;
+
+  if (WiFi.status() != WL_CONNECTED) {
+    WiFi.disconnect();
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  }
+}
+
 void networkHandle(SensorData &data, ControlState &state) {
   gData = &data;
   gState = &state;
+  ensureWifiConnected();
   server.handleClient();
 }
