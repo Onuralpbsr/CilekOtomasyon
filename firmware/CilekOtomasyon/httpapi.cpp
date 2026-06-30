@@ -54,8 +54,8 @@ static void handleStatus() {
   doc["power"]["acPowerFactor"] = gData->acPowerFactor;
 
   doc["relays"]["pump"] = gState->pumpOn;
-  doc["relays"]["light"] = gState->lightOn;
-  // relay2/relay3: fan/ısıtıcı/nemlendirici donanımı yok, şu an boşta/manuel.
+  // relay1/relay2/relay3: ışık/fan/ısıtıcı-nemlendirici donanımı yok, boşta/manuel.
+  doc["relays"]["relay1"] = gState->spareRelay1On;
   doc["relays"]["relay2"] = gState->spareRelay2On;
   doc["relays"]["relay3"] = gState->spareRelay3On;
 

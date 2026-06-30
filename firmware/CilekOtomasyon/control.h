@@ -7,12 +7,11 @@ enum GrowthStage { STAGE_SEEDLING = 0, STAGE_VEGETATIVE = 1, STAGE_FLOWER = 2, S
 struct ControlState {
   GrowthStage stage = STAGE_VEGETATIVE;
 
+  // Tek gerçek aktüatör pompa. Işık/fan/sisleme (nemlendirme) için fiziksel
+  // cihaz yok; bu 3 röle kanalı boşta/manuel. controlManualOverride ile
+  // erişilebilir ama hiçbir otomatik mantık tarafından sürülmüyor.
   bool pumpOn = false;
-  bool lightOn = false;
-
-  // Fiziksel fan/ısıtıcı/nemlendirici yok. Bu iki röle kanalı şu an
-  // boşta/manuel; ileride bir cihaz takılırsa controlManualOverride ile
-  // kullanılabilir ama otomatik mantık tarafından sürülmüyor.
+  bool spareRelay1On = false;
   bool spareRelay2On = false;
   bool spareRelay3On = false;
 

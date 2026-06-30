@@ -129,11 +129,6 @@ static void updateWaterLevel(const SensorData &d, ControlState &s) {
   }
 }
 
-static void updateLight(const SensorData &d, ControlState &s) {
-  s.lightOn = isLightHour(d.hour, d.minute);
-  setRelay(PIN_RELAY_LIGHT, s.lightOn);
-}
-
 // Buhar basıncı açığı (VPD, kPa) - sıcaklık ve bağıl nemden hesaplanan,
 // bitkinin terlemesini tek sayıda özetleyen bilgilendirici metrik.
 // Sadece izleme amaçlı; otomatik bir aksiyona bağlı değil.
@@ -182,10 +177,11 @@ void controlManualOverride(ControlState &s, const String &relay, bool on) {
     setRelay(PIN_RELAY_PUMP, on);
     s.pumpOn = on;
   }
-  else if (relay == "light") { setRelay(PIN_RELAY_LIGHT, on); s.lightOn = on; }
-  // relay2/relay3: şu an fiziksel cihaz bağlı değil (fan/ısıtıcı/nemlendirici
-  // satın alınmadı). Röleyi yine de anahtarlıyoruz ki ileride bir cihaz
-  // takıldığında ya da test amaçlı kullanmak istendiğinde panelden erişilebilsin.
+  // relay1/relay2/relay3: şu an fiziksel cihaz bağlı değil (ışık, fan,
+  // sisleme/nemlendirme - hiçbiri satın alınmadı). Röleyi yine de
+  // anahtarlıyoruz ki ileride bir cihaz takıldığında ya da test amaçlı
+  // kullanmak istendiğinde panelden erişilebilsin.
+  else if (relay == "relay1") { setRelay(PIN_RELAY_LIGHT, on); s.spareRelay1On = on; }
   else if (relay == "relay2") { setRelay(PIN_RELAY_FAN, on); s.spareRelay2On = on; }
   else if (relay == "relay3") { setRelay(PIN_RELAY_CLIMATE, on); s.spareRelay3On = on; }
 }
@@ -195,7 +191,6 @@ void controlUpdate(const SensorData &d, ControlState &s) {
   updateWaterLevel(d, s);
   updatePumpSafety(d, s);
   updateIrrigation(d, s);
-  updateLight(d, s);
   updateClimateMonitoring(d, s);
   updateRunoff(d, s);
 }

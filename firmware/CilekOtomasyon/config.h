@@ -38,10 +38,10 @@
 #define PIN_FLOAT_SWITCH    2   // LOW = su yok (NC şamandıra varsayımı, kablolamaya göre değiştir)
 
 // ---------- Röle kartı (4 kanal, aktif LOW çoğu modülde) ----------
-#define PIN_RELAY_PUMP      15
+#define PIN_RELAY_PUMP      15  // tek gerçek aktüatör (12V DC su pompası)
 #define PIN_RELAY_FAN       16  // boşta/manuel - fiziksel fan yok, otomatik sürülmüyor
-#define PIN_RELAY_LIGHT     17
-#define PIN_RELAY_CLIMATE   18  // boşta/manuel - fiziksel ısıtıcı/nemlendirici yok, otomatik sürülmüyor
+#define PIN_RELAY_LIGHT     17  // boşta/manuel - fiziksel ışık/lamba yok, otomatik sürülmüyor
+#define PIN_RELAY_CLIMATE   18  // boşta/manuel - fiziksel ısıtıcı/nemlendirici/sisleme yok, otomatik sürülmüyor
 #define RELAY_ACTIVE_LOW    true
 
 // ---------- SIM800L (UART1) ----------
@@ -86,7 +86,8 @@ static const StageThresholds STAGE_PARAMS[4] = {
 #define ROOTZONE_TEMP_MAX    22.0f
 #define ROOTZONE_TEMP_MIN    18.0f
 
-// Fotoperiyot (gün-nötr çeşit varsayımı)
+// Gündüz/gece sınırı (fiziksel ışık yok; sadece iklim izleme eşiklerinde
+// gündüz/gece hedeflerini seçmek için kullanılır - TEMP_DAY_*/TEMP_NIGHT_*)
 #define LIGHT_ON_HOUR        6
 #define LIGHT_ON_MINUTE      0
 #define LIGHT_OFF_HOUR       22
