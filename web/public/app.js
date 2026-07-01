@@ -43,7 +43,8 @@ const CHART_DEFS = [
 const charts = {};
 
 function card(label, value, unit) {
-  return `<div class="card"><div class="label">${label}</div><div class="value">${value}<span class="unit"> ${unit || ""}</span></div></div>`;
+  const emptyClass = value === "—" ? " empty" : "";
+  return `<div class="card"><div class="label">${label}</div><div class="value${emptyClass}">${value}<span class="unit"> ${unit || ""}</span></div></div>`;
 }
 
 const STAT_ICONS = {
@@ -224,8 +225,8 @@ function miniChartOptions() {
     plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false } },
     elements: { point: { radius: 0 } },
     scales: {
-      x: { ticks: { maxTicksLimit: 4, font: { size: 10 } }, grid: { display: false } },
-      y: { ticks: { maxTicksLimit: 4, font: { size: 10 } } },
+      x: { ticks: { maxTicksLimit: 3, font: { size: 10 }, maxRotation: 0 }, grid: { display: false } },
+      y: { ticks: { maxTicksLimit: 3, font: { size: 10 } } },
     },
   };
 }

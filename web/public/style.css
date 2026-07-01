@@ -176,6 +176,7 @@ section[id] { scroll-margin-top: 64px; }
 .card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
 .card .label { font-size: 12px; color: var(--muted); }
 .card .value { font-size: 19px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
+.card .value.empty { color: var(--muted); font-weight: 400; }
 .card .unit { font-size: 12px; font-weight: 400; color: var(--muted); }
 
 .pump-card {
@@ -193,6 +194,7 @@ section[id] { scroll-margin-top: 64px; }
   transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
 .pump-card:hover { border-color: var(--accent); }
+.pump-card:active { transform: scale(0.97); }
 .pump-card.on {
   background: rgba(76, 175, 109, 0.16);
   border-color: var(--accent);
@@ -245,6 +247,9 @@ button#clearFaultsBtn {
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 button#clearFaultsBtn:hover { border-color: var(--danger); color: var(--danger); }
+button#clearFaultsBtn:active { transform: scale(0.97); }
+
+.quicknav a:active { transform: scale(0.96); }
 
 .chart-legend {
   display: flex;
@@ -313,5 +318,5 @@ button#clearFaultsBtn:hover { border-color: var(--danger); color: var(--danger);
   color: var(--chart-color, var(--text));
   flex-shrink: 0;
 }
-.chart-mini-canvas { position: relative; height: 84px; width: 100%; min-width: 0; }
+.chart-mini-canvas { position: relative; height: 92px; width: 100%; min-width: 0; }
 .chart-mini-canvas canvas { max-width: 100%; }
