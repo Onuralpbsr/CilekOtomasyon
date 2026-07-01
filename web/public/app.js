@@ -195,8 +195,11 @@ function buildHistoryChartLayout() {
       <h3>${group}</h3>
       <div class="chart-mini-grid">
         ${CHART_DEFS.filter(c => c.group === group).map(c => `
-          <div class="chart-mini">
-            <div class="chart-mini-title">${c.title} <span class="unit">${c.unit}</span></div>
+          <div class="chart-mini" style="--chart-color:${c.color}">
+            <div class="chart-mini-title">
+              <span>${c.title} <span class="unit">${c.unit}</span></span>
+              <span class="latest" id="${c.id}-latest"></span>
+            </div>
             <div class="chart-mini-canvas"><canvas id="${c.id}"></canvas></div>
           </div>
         `).join("")}
@@ -227,6 +230,16 @@ function miniChartOptions() {
   };
 }
 
+const UNIT_DIGITS = { "°C": 1, "%": 0, lux: 0, kPa: 2, L: 2, A: 2, W: 0, kWh: 3 };
+
+function latestValue(rows, field) {
+  for (let i = rows.length - 1; i >= 0; i--) {
+    const v = rows[i][field];
+    if (v !== null && v !== undefined) return v;
+  }
+  return null;
+}
+
 async function refreshHistory() {
   if (!document.getElementById(CHART_DEFS[0].id)) buildHistoryChartLayout();
 
@@ -252,6 +265,9 @@ async function refreshHistory() {
     } else {
       charts[c.id] = new Chart(document.getElementById(c.id), { type: "line", data, options: miniChartOptions() });
     }
+
+    const latestEl = document.getElementById(`${c.id}-latest`);
+    if (latestEl) latestEl.textContent = fmt(latestValue(rows, c.field), UNIT_DIGITS[c.unit] ?? 1);
   });
 }
 
