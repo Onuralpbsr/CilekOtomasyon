@@ -42,6 +42,11 @@ function fmt(n, digits = 1) {
   return (n === null || n === undefined || Number.isNaN(n)) ? "—" : Number(n).toFixed(digits);
 }
 
+function setBadge(el, text, cls) {
+  el.innerHTML = `<span class="dot"></span>${text}`;
+  el.className = `badge ${cls}`;
+}
+
 async function refreshLive() {
   const connBadge = document.getElementById("connStatus");
   try {
@@ -49,12 +54,10 @@ async function refreshLive() {
     const { status, error } = await res.json();
 
     if (error || !status) {
-      connBadge.textContent = "ESP32 bağlantısı yok";
-      connBadge.className = "badge err";
+      setBadge(connBadge, "ESP32 bağlantısı yok", "err");
       return;
     }
-    connBadge.textContent = "Bağlı";
-    connBadge.className = "badge ok";
+    setBadge(connBadge, "Bağlı", "ok");
 
     const hasFault = status.faults.pumpFault || status.faults.waterLowFault || status.climate.alertActive;
 
@@ -119,8 +122,7 @@ async function refreshLive() {
     }
 
   } catch (e) {
-    connBadge.textContent = "Panel sunucusuna ulaşılamıyor";
-    connBadge.className = "badge err";
+    setBadge(connBadge, "Panel sunucusuna ulaşılamıyor", "err");
   }
 }
 

@@ -15,7 +15,7 @@
       <h1>🍓 Çilek Otomasyon</h1>
       <p class="subtitle">Canlı sera izleme ve kontrol paneli</p>
     </div>
-    <div id="connStatus" class="badge">Bağlanıyor...</div>
+    <div id="connStatus" class="badge"><span class="dot"></span>Bağlanıyor...</div>
   </header>
 
   <nav class="quicknav" aria-label="Hızlı gezinme">
@@ -34,38 +34,38 @@
   </section>
 
   <section class="panel" id="iklim">
-    <h2>İklim</h2>
+    <h2><svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13.5V4a2 2 0 1 1 4 0v9.5a4 4 0 1 1-4 0z"/></svg>İklim</h2>
     <div class="grid" id="cardsClimate"></div>
   </section>
 
   <section class="panel" id="kok-substrat">
-    <h2>Kök &amp; Substrat</h2>
+    <h2><svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg>Kök &amp; Substrat</h2>
     <div class="grid" id="cardsRoot"></div>
   </section>
 
   <section class="panel" id="sulama">
-    <h2>Sulama</h2>
+    <h2><svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2s7 7.5 7 12a7 7 0 1 1-14 0c0-4.5 7-12 7-12z"/></svg>Sulama</h2>
     <div class="grid" id="cardsIrrigation"></div>
   </section>
 
   <section class="panel" id="guc">
-    <h2>Güç</h2>
+    <h2><svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>Güç</h2>
     <div class="grid" id="cardsPower"></div>
   </section>
 
   <section class="panel" id="role">
-    <h2>Röle Kontrolü</h2>
+    <h2><svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="8" width="20" height="8" rx="4"/><circle cx="8" cy="12" r="2.5" fill="currentColor" stroke="none"/></svg>Röle Kontrolü</h2>
     <div class="relays" id="relayControls"></div>
   </section>
 
   <section class="panel" id="uyarilar">
-    <h2>Uyarılar</h2>
+    <h2><svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0-6 6v4l-2 4h16l-2-4V9a6 6 0 0 0-6-6z"/><path d="M9.5 20.5a2.5 2.5 0 0 0 5 0"/></svg>Uyarılar</h2>
     <div id="alarms"></div>
     <button id="clearFaultsBtn">Arızaları Temizle</button>
   </section>
 
   <section class="panel" id="gecmis">
-    <h2>Geçmiş (24 saat)</h2>
+    <h2><svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V5M4 19h16M8 15l3-4 3 3 4-6"/></svg>Geçmiş (24 saat)</h2>
     <div id="historyCharts"></div>
   </section>
 

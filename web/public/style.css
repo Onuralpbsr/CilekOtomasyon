@@ -32,10 +32,10 @@ header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
-h1 { font-size: 20px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: 21px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
 .subtitle { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
 
 .quicknav {
@@ -66,6 +66,9 @@ h1 { font-size: 20px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
 section[id] { scroll-margin-top: 64px; }
 
 .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   padding: 5px 12px;
   border-radius: 20px;
   background: var(--card);
@@ -73,8 +76,16 @@ section[id] { scroll-margin-top: 64px; }
   color: var(--muted);
   font-size: 13px;
 }
+.badge .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
 .badge.ok { background: rgba(76, 175, 109, 0.15); border-color: var(--accent); color: var(--accent); }
+.badge.ok .dot { background: var(--accent); animation: pulse 2s ease-in-out infinite; }
 .badge.err { background: rgba(226, 87, 76, 0.15); border-color: var(--danger); color: var(--danger); }
+.badge.err .dot { background: var(--danger); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
 
 .status-strip { margin-bottom: 24px; }
 #statusStrip {
@@ -85,6 +96,7 @@ section[id] { scroll-margin-top: 64px; }
   border: 1px solid var(--border);
   border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 .status-strip .stat {
   background: var(--panel);
@@ -98,26 +110,26 @@ section[id] { scroll-margin-top: 64px; }
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 18px 20px;
-  margin-bottom: 16px;
+  padding: 20px 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 .panel h2 {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 0 0 14px;
+  gap: 9px;
+  margin: 0 0 16px;
   font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--muted);
 }
-.panel h2::before {
-  content: "";
-  width: 3px;
-  height: 14px;
-  border-radius: 2px;
-  background: var(--accent);
+.panel-icon {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  color: var(--accent);
 }
 
 .grid {
@@ -131,9 +143,9 @@ section[id] { scroll-margin-top: 64px; }
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 12px 14px;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease;
 }
-.card:hover { border-color: var(--border-strong); }
+.card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
 .card .label { font-size: 12px; color: var(--muted); }
 .card .value { font-size: 19px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .card .unit { font-size: 12px; font-weight: 400; color: var(--muted); }
@@ -145,6 +157,9 @@ section[id] { scroll-margin-top: 64px; }
 }
 
 .relay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   padding: 10px 16px;
   border-radius: 8px;
   border: 1px solid var(--border);
@@ -154,8 +169,17 @@ section[id] { scroll-margin-top: 64px; }
   font-size: 14px;
   transition: border-color 0.15s ease, background-color 0.15s ease;
 }
+.relay-btn::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex-shrink: 0;
+}
 .relay-btn:hover { border-color: var(--border-strong); }
 .relay-btn.on { background: rgba(76, 175, 109, 0.18); border-color: var(--accent); color: var(--accent); }
+.relay-btn.on::before { background: var(--accent); }
 
 #alarms { margin-bottom: 12px; min-height: 20px; color: var(--muted); font-size: 14px; }
 #alarms.has-alarm { color: var(--danger); font-weight: 600; }
@@ -195,6 +219,7 @@ button#clearFaultsBtn:hover { border-color: var(--danger); color: var(--danger);
   border-radius: 8px;
   padding: 12px 14px;
   transition: border-color 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 .chart-mini:hover { border-color: var(--border-strong); }
 .chart-mini-title {
