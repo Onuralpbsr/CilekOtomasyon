@@ -55,6 +55,24 @@
 
   <section class="panel" id="sulama">
     <h2><svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2s7 7.5 7 12a7 7 0 1 1-14 0c0-4.5 7-12 7-12z"/></svg>Sulama</h2>
+    <div class="flow-strip" id="flowStrip">
+      <div class="flow-row">
+        <span class="flow-row-label">Giriş</span>
+        <span class="flow-pipe" style="--pipe-color: var(--flow-in-color)">
+          <span class="flow-drop" style="animation-delay:0s"></span>
+          <span class="flow-drop" style="animation-delay:0.5s"></span>
+          <span class="flow-drop" style="animation-delay:1s"></span>
+        </span>
+      </div>
+      <div class="flow-row">
+        <span class="flow-row-label">Drenaj</span>
+        <span class="flow-pipe" style="--pipe-color: var(--flow-drain-color)">
+          <span class="flow-drop" style="animation-delay:0.2s"></span>
+          <span class="flow-drop" style="animation-delay:0.7s"></span>
+          <span class="flow-drop" style="animation-delay:1.2s"></span>
+        </span>
+      </div>
+    </div>
     <div class="grid" id="cardsIrrigation"></div>
   </section>
 

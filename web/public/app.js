@@ -41,6 +41,7 @@ const CHART_DEFS = [
 ];
 
 const charts = {};
+let lastPumpOn = null;
 
 function card(label, value, unit) {
   const emptyClass = value === "—" ? " empty" : "";
@@ -169,23 +170,36 @@ async function refreshLive() {
 
     renderSystemStatus(status.system || {});
 
+    // Röle kartı (pompa) sadece durum gerçekten değiştiğinde yeniden çiziliyor,
+    // yoksa içindeki akış animasyonu her 5 sn'lik yenilemede baştan başlardı.
+    const pumpOn = status.relays.pump;
     const relayDiv = document.getElementById("relayControls");
-    relayDiv.innerHTML = RELAYS.map(r => {
-      const on = status.relays[r.key];
-      return `<button class="pump-card ${on ? "on" : ""}" data-relay="${r.key}" data-on="${!on}">
-        <span class="pump-icon-wrap">
-          <svg class="pump-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2s7 7.5 7 12a7 7 0 1 1-14 0c0-4.5 7-12 7-12z"/></svg>
-        </span>
-        <span class="pump-card-text">
-          <span class="pump-card-label">${r.label}</span>
-          <span class="pump-card-state">${on ? "AÇIK" : "KAPALI"}</span>
-        </span>
-        <span class="pump-card-indicator"></span>
-      </button>`;
-    }).join("");
-    relayDiv.querySelectorAll(".pump-card").forEach(btn => {
-      btn.onclick = () => sendControl({ relay: btn.dataset.relay, on: btn.dataset.on === "true" });
-    });
+    if (pumpOn !== lastPumpOn) {
+      lastPumpOn = pumpOn;
+      relayDiv.innerHTML = RELAYS.map(r => {
+        const on = status.relays[r.key];
+        return `<button class="pump-card ${on ? "on" : ""}" data-relay="${r.key}" data-on="${!on}">
+          <span class="pump-icon-wrap">
+            <svg class="pump-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2s7 7.5 7 12a7 7 0 1 1-14 0c0-4.5 7-12 7-12z"/></svg>
+          </span>
+          <span class="pump-card-text">
+            <span class="pump-card-label">${r.label}</span>
+            <span class="pump-card-state">${on ? "AÇIK" : "KAPALI"}</span>
+          </span>
+          <span class="flow-pipe pump-pipe ${on ? "flowing" : ""}">
+            <span class="flow-drop" style="animation-delay:0s"></span>
+            <span class="flow-drop" style="animation-delay:0.5s"></span>
+            <span class="flow-drop" style="animation-delay:1s"></span>
+          </span>
+          <span class="pump-card-indicator"></span>
+        </button>`;
+      }).join("");
+      relayDiv.querySelectorAll(".pump-card").forEach(btn => {
+        btn.onclick = () => sendControl({ relay: btn.dataset.relay, on: btn.dataset.on === "true" });
+      });
+    }
+
+    document.querySelectorAll("#flowStrip .flow-pipe").forEach(el => el.classList.toggle("flowing", pumpOn));
 
     const alarms = document.getElementById("alarms");
     alarms.className = hasFault ? "has-alarm" : "";
