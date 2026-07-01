@@ -29,7 +29,7 @@ body {
 .container {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 24px 20px 60px;
+  padding: 24px 20px 120px;
 }
 
 .panel, .status-strip {
@@ -169,26 +169,36 @@ section[id] { scroll-margin-top: 64px; }
 .card .value { font-size: 19px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .card .unit { font-size: 12px; font-weight: 400; color: var(--muted); }
 
+.floating-pump {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 100;
+  width: 240px;
+}
+
 .pump-card {
   display: flex;
   align-items: center;
   gap: 14px;
   width: 100%;
   padding: 14px 18px;
-  margin-bottom: 18px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--card);
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--panel);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
-.pump-card:hover { border-color: var(--border-strong); }
+.pump-card:hover { border-color: var(--accent); transform: translateY(-2px); }
 .pump-card.on {
-  background: rgba(76, 175, 109, 0.12);
+  background: rgba(76, 175, 109, 0.16);
   border-color: var(--accent);
-  box-shadow: 0 4px 16px rgba(76, 175, 109, 0.18);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(76, 175, 109, 0.3), 0 4px 20px rgba(76, 175, 109, 0.25);
 }
 .pump-icon-wrap {
   width: 42px;
@@ -216,6 +226,10 @@ section[id] { scroll-margin-top: 64px; }
   flex-shrink: 0;
 }
 .pump-card.on .pump-card-indicator { background: var(--accent); animation: pulse 2s ease-in-out infinite; }
+
+@media (max-width: 560px) {
+  .floating-pump { left: 16px; right: 16px; bottom: 16px; width: auto; }
+}
 
 #alarms { margin-bottom: 12px; min-height: 20px; color: var(--muted); font-size: 14px; }
 #alarms.has-alarm { color: var(--danger); font-weight: 600; }
