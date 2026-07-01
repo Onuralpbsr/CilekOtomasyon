@@ -26,13 +26,16 @@
   </header>
 
   <nav class="quicknav" aria-label="Hızlı gezinme">
-    <a href="#durum">Durum</a>
-    <a href="#iklim">İklim</a>
-    <a href="#kok-substrat">Kök &amp; Substrat</a>
-    <a href="#sulama">Sulama</a>
-    <a href="#guc">Güç</a>
-    <a href="#uyarilar">Uyarılar</a>
-    <a href="#gecmis">Geçmiş</a>
+    <div class="quicknav-links">
+      <a href="#durum">Durum</a>
+      <a href="#iklim">İklim</a>
+      <a href="#kok-substrat">Kök &amp; Substrat</a>
+      <a href="#sulama">Sulama</a>
+      <a href="#guc">Güç</a>
+      <a href="#uyarilar">Uyarılar</a>
+      <a href="#gecmis">Geçmiş</a>
+    </div>
+    <div id="relayControls" class="quicknav-pump"></div>
   </nav>
 
   <section class="status-strip" id="durum">
@@ -71,8 +74,6 @@
   </section>
 
 </div>
-
-<div id="relayControls" class="floating-pump"></div>
 
 <script src="app.js"></script>
 </body>

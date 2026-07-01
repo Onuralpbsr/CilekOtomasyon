@@ -134,7 +134,7 @@ Fiziksel ışık/fan/ısıtıcı/nemlendirici bulunmadığı için sistem sıcak
 `http://localhost:3000` adresinde, koyu temalı tek sayfa dashboard:
 - **Canlı kartlar:** ortam sıcaklık/nem/basınç (BME280), iki ayrı SHT30 sıcaklık/nem, ışık (lux), VPD, besin çözeltisi ve kök bölgesi sıcaklığı, substrat nemi, günlük sulama/drenaj hacmi ve sayısı, gerçek/hedef drenaj oranı, pompa voltaj/akım/güç, AC voltaj/akım/güç/enerji/frekans/güç faktörü, su seviyesi durumu.
 - **Durum şeridi:** evre, su seviyesi, sulama durumu, iklim durumu (Normal/Hedef dışı), aktif uyarı — tek bakışta.
-- **Pompa kontrolü:** Sulama bölümünün üstünde, aç/kapat durumunu ve ikonunu gösteren tek bir kart (tıkla aç/kapat). Ayrı bir "Röle Kontrolü" bölümü yok — boş röle kanalları (relay1/2/3) kullanılmadıkları için panelde yer almaz, ileride bir cihaz bağlanırsa eklenebilir.
+- **Pompa kontrolü:** üstteki sabit (sticky) hızlı gezinme çubuğunun sağında, sayfa kaydırılsa da hep görünür kalan kompakt bir kontrol (ikon + AÇIK/KAPALI durumu, tıkla aç/kapat). Ayrı bir "Röle Kontrolü" bölümü yok — boş röle kanalları (relay1/2/3) kullanılmadıkları için panelde yer almaz, ileride bir cihaz bağlanırsa eklenebilir.
 - **Uyarılar paneli:** aktif arıza/iklim uyarısı varsa kırmızı, yoksa "Aktif uyarı yok"; "Arızaları Temizle" butonu.
 - **24 saatlik geçmiş grafikler:** her metrik kendi tek-seri mini grafiğinde (toplam 17 grafik), İklim/Kök & Substrat/Sulama/Güç başlıkları altında gruplanmış — Chart.js ile, dakikada bir yenilenir.
 

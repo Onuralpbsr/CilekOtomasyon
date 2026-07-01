@@ -29,7 +29,7 @@ body {
 .container {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 24px 20px 120px;
+  padding: 24px 20px 60px;
 }
 
 .panel, .status-strip {
@@ -58,12 +58,20 @@ h1 { font-size: 21px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
   top: 0;
   z-index: 10;
   display: flex;
-  gap: 6px;
-  overflow-x: auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
   padding: 8px 0 16px;
   margin-bottom: 4px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
+}
+.quicknav-links {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  min-width: 0;
 }
 .quicknav a {
   flex: 0 0 auto;
@@ -78,6 +86,7 @@ h1 { font-size: 21px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
 }
 .quicknav a:hover { border-color: var(--accent); color: var(--accent); }
 .quicknav a.active { border-color: var(--accent); color: var(--accent); background: rgba(76, 175, 109, 0.12); }
+.quicknav-pump { flex-shrink: 0; }
 
 section[id] { scroll-margin-top: 64px; }
 
@@ -169,66 +178,57 @@ section[id] { scroll-margin-top: 64px; }
 .card .value { font-size: 19px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .card .unit { font-size: 12px; font-weight: 400; color: var(--muted); }
 
-.floating-pump {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  z-index: 100;
-  width: 240px;
-}
-
 .pump-card {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 14px 18px;
-  border-radius: 12px;
+  gap: 10px;
+  padding: 6px 14px 6px 8px;
+  border-radius: 20px;
   border: 1px solid var(--border-strong);
   background: var(--panel);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
-  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  white-space: nowrap;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
-.pump-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.pump-card:hover { border-color: var(--accent); }
 .pump-card.on {
   background: rgba(76, 175, 109, 0.16);
   border-color: var(--accent);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(76, 175, 109, 0.3), 0 4px 20px rgba(76, 175, 109, 0.25);
+  box-shadow: 0 0 0 1px rgba(76, 175, 109, 0.2), 0 2px 10px rgba(76, 175, 109, 0.2);
 }
 .pump-icon-wrap {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--panel);
+  background: var(--card);
   color: var(--muted);
   flex-shrink: 0;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
-.pump-card.on .pump-icon-wrap { background: rgba(76, 175, 109, 0.2); color: var(--accent); }
-.pump-icon { width: 21px; height: 21px; }
-.pump-card-text { flex: 1; display: flex; flex-direction: column; }
+.pump-card.on .pump-icon-wrap { background: rgba(76, 175, 109, 0.22); color: var(--accent); }
+.pump-icon { width: 15px; height: 15px; }
+.pump-card-text { display: flex; align-items: baseline; gap: 6px; }
 .pump-card-label { font-size: 13px; color: var(--muted); }
-.pump-card-state { font-size: 19px; font-weight: 600; margin-top: 2px; color: var(--text); }
+.pump-card-state { font-size: 13px; font-weight: 600; color: var(--text); }
 .pump-card.on .pump-card-state { color: var(--accent); }
 .pump-card-indicator {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--muted);
   flex-shrink: 0;
 }
 .pump-card.on .pump-card-indicator { background: var(--accent); animation: pulse 2s ease-in-out infinite; }
 
-@media (max-width: 560px) {
-  .floating-pump { left: 16px; right: 16px; bottom: 16px; width: auto; }
+@media (max-width: 640px) {
+  .quicknav { justify-content: flex-start; }
+  .quicknav-pump { order: -1; width: 100%; }
+  .pump-card { width: 100%; justify-content: center; }
 }
 
 #alarms { margin-bottom: 12px; min-height: 20px; color: var(--muted); font-size: 14px; }
