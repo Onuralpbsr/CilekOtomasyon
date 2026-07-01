@@ -57,11 +57,12 @@ const STAT_ICONS = {
   bell: '<path d="M12 3a6 6 0 0 0-6 6v4l-2 4h16l-2-4V9a6 6 0 0 0-6-6z"/><path d="M9.5 20.5a2.5 2.5 0 0 0 5 0"/>',
 };
 
-function stat(label, value, alert = false, icon = "") {
+function stat(label, value, alert = false, icon = "", active = false) {
   const iconSvg = icon
     ? `<svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon}</svg>`
     : "";
-  return `<div class="stat ${alert ? "alert" : ""}"><div class="stat-head">${iconSvg}<span class="label">${label}</span></div><div class="value">${value}</div></div>`;
+  const cls = alert ? "alert" : active ? "active" : "";
+  return `<div class="stat ${cls}"><div class="stat-head">${iconSvg}<span class="label">${label}</span></div><div class="value">${value}</div></div>`;
 }
 
 function fmt(n, digits = 1) {
@@ -127,7 +128,7 @@ async function refreshLive() {
     document.getElementById("statusStrip").innerHTML = [
       stat("Evre", STAGE_NAMES[status.stage] ?? "—", false, STAT_ICONS.stage),
       stat("Su Seviyesi", status.irrigation.waterLevelOk ? "Normal" : "DÜŞÜK", !status.irrigation.waterLevelOk, STAT_ICONS.water),
-      stat("Sulama", status.irrigation.inProgress ? "Sürüyor" : "Bekliyor", false, STAT_ICONS.clock),
+      stat("Sulama", status.irrigation.inProgress ? "Sürüyor" : "Bekliyor", false, STAT_ICONS.clock, status.irrigation.inProgress),
       stat("Bugün Sulama", `${status.irrigation.irrigationsToday} kez`, false, STAT_ICONS.calendar),
       stat("İklim", status.climate.alertActive ? "Hedef dışı" : "Normal", status.climate.alertActive, STAT_ICONS.climate),
       stat("Uyarı", hasFault ? (status.faults.lastAlarm || "Aktif arıza") : "Yok", hasFault, STAT_ICONS.bell),
@@ -272,7 +273,7 @@ function miniChartOptions() {
   return {
     responsive: true,
     maintainAspectRatio: false,
-    animation: false,
+    animation: { duration: 400, easing: "easeOutQuad" },
     plugins: { legend: { display: false }, tooltip: { mode: "index", intersect: false } },
     elements: { point: { radius: 0 } },
     scales: {
