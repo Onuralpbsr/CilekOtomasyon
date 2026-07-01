@@ -121,7 +121,7 @@ Fiziksel ışık/fan/ısıtıcı/nemlendirici bulunmadığı için sistem sıcak
 ## HTTP API
 
 **ESP32 firmware (`httpapi.cpp`):**
-- `GET /api/status` — tüm sensör verisi, röle durumları, arızalar, aktif evre, `irrigation.runoffPctToday`/`runoffTargetPct`, `climate.vpdKPa`/`alertActive` (JSON)
+- `GET /api/status` — tüm sensör verisi, röle durumları, arızalar, aktif evre, `irrigation.runoffPctToday`/`runoffTargetPct`, `climate.vpdKPa`/`alertActive`, `system.*` (her sensörün bağlı/bağlı değil durumu, `gsmOk`, `wifiRssi`) (JSON)
 - `POST /api/control` — gövde: `{ "clearFaults": true }`, `{ "stage": 0-3 }`, veya `{ "relay": "pump"|"relay1"|"relay2"|"relay3", "on": true|false }` (`relay1`/`relay2`/`relay3` = boşta kanallar, fiziksel cihaz yok)
 
 **Web sunucusu (`server.js`, Mac üzerinde):**
@@ -136,6 +136,7 @@ Fiziksel ışık/fan/ısıtıcı/nemlendirici bulunmadığı için sistem sıcak
 - **Durum şeridi:** evre, su seviyesi, sulama durumu, iklim durumu (Normal/Hedef dışı), aktif uyarı — tek bakışta.
 - **Pompa kontrolü:** üstteki sabit (sticky) hızlı gezinme çubuğunun sağında, sayfa kaydırılsa da hep görünür kalan kompakt bir kontrol (ikon + AÇIK/KAPALI durumu, tıkla aç/kapat). Ayrı bir "Röle Kontrolü" bölümü yok — boş röle kanalları (relay1/2/3) kullanılmadıkları için panelde yer almaz, ileride bir cihaz bağlanırsa eklenebilir.
 - **Uyarılar paneli:** aktif arıza/iklim uyarısı varsa kırmızı, yoksa "Aktif uyarı yok"; "Arızaları Temizle" butonu.
+- **Sistem Durumu:** her sensörün (BME280, SHT30 x2, TSL2561, INA219, DS3231, DS18B20 x2, PZEM-004T) ve SIM800L'in bağlı/bağlı değil durumu, WiFi sinyal gücü (dBm + iyi/orta/zayıf) — bir sensör fiziksel olarak koptuğunda ilgili kartta sessizce "—" görmek yerine tek bakışta fark edilir.
 - **24 saatlik geçmiş grafikler:** her metrik kendi tek-seri mini grafiğinde (toplam 17 grafik), İklim/Kök & Substrat/Sulama/Güç başlıkları altında gruplanmış — Chart.js ile, dakikada bir yenilenir.
 
 ## Kurulum (tek komut)
