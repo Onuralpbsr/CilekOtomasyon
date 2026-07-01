@@ -67,6 +67,41 @@ function fmt(n, digits = 1) {
   return (n === null || n === undefined || Number.isNaN(n)) ? "—" : Number(n).toFixed(digits);
 }
 
+const SYSTEM_ITEMS = [
+  { key: "bmeOk", label: "BME280" },
+  { key: "sht1Ok", label: "SHT30 #1" },
+  { key: "sht2Ok", label: "SHT30 #2" },
+  { key: "tslOk", label: "TSL2561" },
+  { key: "inaOk", label: "INA219" },
+  { key: "rtcOk", label: "DS3231 RTC" },
+  { key: "ds18b20Ok", label: "DS18B20 x2" },
+  { key: "pzemOk", label: "PZEM-004T" },
+  { key: "gsmOk", label: "SIM800L" },
+];
+
+function healthBadge(label, cls, stateText) {
+  return `<div class="health-badge ${cls}">
+    <span class="health-dot"></span>
+    <span class="health-label">${label}</span>
+    <span class="health-state">${stateText}</span>
+  </div>`;
+}
+
+function wifiHealthBadge(rssi) {
+  if (rssi === null || rssi === undefined || Number.isNaN(rssi)) {
+    return healthBadge("WiFi Sinyali", "", "—");
+  }
+  const cls = rssi > -60 ? "ok" : rssi > -75 ? "warn" : "fail";
+  const label = rssi > -60 ? "İyi" : rssi > -75 ? "Orta" : "Zayıf";
+  return healthBadge("WiFi Sinyali", cls, `${label} (${rssi} dBm)`);
+}
+
+function renderSystemStatus(sys) {
+  const items = SYSTEM_ITEMS.map(s => healthBadge(s.label, sys[s.key] ? "ok" : "fail", sys[s.key] ? "Bağlı" : "Yok"));
+  items.push(wifiHealthBadge(sys.wifiRssi));
+  document.getElementById("systemStatus").innerHTML = items.join("");
+}
+
 function setBadge(el, text, cls) {
   el.innerHTML = `<span class="dot"></span>${text}`;
   el.className = `badge ${cls}`;
@@ -131,6 +166,8 @@ async function refreshLive() {
       card("AC Frekans", fmt(status.power.acFrequency, 0), "Hz"),
       card("AC Güç Faktörü", fmt(status.power.acPowerFactor, 2), ""),
     ].join("");
+
+    renderSystemStatus(status.system || {});
 
     const relayDiv = document.getElementById("relayControls");
     relayDiv.innerHTML = RELAYS.map(r => {

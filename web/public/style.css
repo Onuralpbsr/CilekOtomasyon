@@ -251,6 +251,30 @@ button#clearFaultsBtn:active { transform: scale(0.97); }
 
 .quicknav a:active { transform: scale(0.96); }
 
+.health-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+.health-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+.health-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+.health-badge.ok .health-dot { background: var(--accent); }
+.health-badge.warn .health-dot { background: #f1c40f; }
+.health-badge.fail .health-dot { background: var(--danger); }
+.health-label { font-size: 13px; flex: 1; }
+.health-state { font-size: 12px; color: var(--muted); }
+.health-badge.ok .health-state { color: var(--accent); }
+.health-badge.warn .health-state { color: #f1c40f; }
+.health-badge.fail .health-state { color: var(--danger); }
+
 .chart-legend {
   display: flex;
   flex-wrap: wrap;
