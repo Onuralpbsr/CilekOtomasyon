@@ -46,8 +46,20 @@ function card(label, value, unit) {
   return `<div class="card"><div class="label">${label}</div><div class="value">${value}<span class="unit"> ${unit || ""}</span></div></div>`;
 }
 
-function stat(label, value, alert = false) {
-  return `<div class="stat ${alert ? "alert" : ""}"><div class="label">${label}</div><div class="value">${value}</div></div>`;
+const STAT_ICONS = {
+  stage: '<path d="M12 21V11M12 11C6.5 11 3 7 3 3c5.5 0 9 3.5 9 8zm0 0c0-4.5 3.5-8 9-8 0 4-3.5 8-9 8z"/>',
+  water: '<path d="M12 2s7 7.5 7 12a7 7 0 1 1-14 0c0-4.5 7-12 7-12z"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>',
+  climate: '<path d="M10 13.5V4a2 2 0 1 1 4 0v9.5a4 4 0 1 1-4 0z"/>',
+  bell: '<path d="M12 3a6 6 0 0 0-6 6v4l-2 4h16l-2-4V9a6 6 0 0 0-6-6z"/><path d="M9.5 20.5a2.5 2.5 0 0 0 5 0"/>',
+};
+
+function stat(label, value, alert = false, icon = "") {
+  const iconSvg = icon
+    ? `<svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon}</svg>`
+    : "";
+  return `<div class="stat ${alert ? "alert" : ""}"><div class="stat-head">${iconSvg}<span class="label">${label}</span></div><div class="value">${value}</div></div>`;
 }
 
 function fmt(n, digits = 1) {
@@ -76,12 +88,12 @@ async function refreshLive() {
     const hasFault = status.faults.pumpFault || status.faults.waterLowFault || status.climate.alertActive;
 
     document.getElementById("statusStrip").innerHTML = [
-      stat("Evre", STAGE_NAMES[status.stage] ?? "—"),
-      stat("Su Seviyesi", status.irrigation.waterLevelOk ? "Normal" : "DÜŞÜK", !status.irrigation.waterLevelOk),
-      stat("Sulama", status.irrigation.inProgress ? "Sürüyor" : "Bekliyor"),
-      stat("Bugün Sulama", `${status.irrigation.irrigationsToday} kez`),
-      stat("İklim", status.climate.alertActive ? "Hedef dışı" : "Normal", status.climate.alertActive),
-      stat("Uyarı", hasFault ? (status.faults.lastAlarm || "Aktif arıza") : "Yok", hasFault),
+      stat("Evre", STAGE_NAMES[status.stage] ?? "—", false, STAT_ICONS.stage),
+      stat("Su Seviyesi", status.irrigation.waterLevelOk ? "Normal" : "DÜŞÜK", !status.irrigation.waterLevelOk, STAT_ICONS.water),
+      stat("Sulama", status.irrigation.inProgress ? "Sürüyor" : "Bekliyor", false, STAT_ICONS.clock),
+      stat("Bugün Sulama", `${status.irrigation.irrigationsToday} kez`, false, STAT_ICONS.calendar),
+      stat("İklim", status.climate.alertActive ? "Hedef dışı" : "Normal", status.climate.alertActive, STAT_ICONS.climate),
+      stat("Uyarı", hasFault ? (status.faults.lastAlarm || "Aktif arıza") : "Yok", hasFault, STAT_ICONS.bell),
     ].join("");
 
     document.getElementById("cardsClimate").innerHTML = [
@@ -151,10 +163,25 @@ async function sendControl(body) {
 
 document.getElementById("clearFaultsBtn").onclick = () => sendControl({ clearFaults: true });
 
+const COLOR_LEGEND = [
+  { label: "Sıcaklık", color: COLOR.temp },
+  { label: "Nem", color: COLOR.hum },
+  { label: "Işık", color: COLOR.light },
+  { label: "VPD", color: COLOR.vpd },
+  { label: "Hacim", color: COLOR.volume },
+  { label: "Oran", color: COLOR.ratio },
+  { label: "Güç", color: COLOR.power },
+];
+
 function buildHistoryChartLayout() {
   const container = document.getElementById("historyCharts");
   const groups = [...new Set(CHART_DEFS.map(c => c.group))];
-  container.innerHTML = groups.map(group => `
+
+  const legend = `<div class="chart-legend">${COLOR_LEGEND.map(l =>
+    `<span class="chart-legend-item"><span class="dot" style="background:${l.color}"></span>${l.label}</span>`
+  ).join("")}</div>`;
+
+  const groupsHtml = groups.map(group => `
     <div class="chart-group">
       <h3>${group}</h3>
       <div class="chart-mini-grid">
@@ -167,6 +194,8 @@ function buildHistoryChartLayout() {
       </div>
     </div>
   `).join("");
+
+  container.innerHTML = legend + groupsHtml;
 }
 
 function miniChartOptions() {
@@ -208,3 +237,19 @@ refreshLive();
 refreshHistory();
 setInterval(refreshLive, 5000);
 setInterval(refreshHistory, 60000);
+
+function setupScrollSpy() {
+  const navLinks = document.querySelectorAll(".quicknav a");
+  const sections = [...navLinks].map(a => document.getElementById(a.getAttribute("href").slice(1))).filter(Boolean);
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === `#${entry.target.id}`));
+    });
+  }, { rootMargin: "-72px 0px -70% 0px" });
+
+  sections.forEach(s => observer.observe(s));
+}
+
+setupScrollSpy();
