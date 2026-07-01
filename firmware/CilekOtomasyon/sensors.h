@@ -46,6 +46,17 @@ struct SensorData {
   // Şamandıra
   bool waterLevelOk = true;
 
+  // Donanım sağlığı. I2C/RTC/DS18B20 açılışta bir kez tespit edilir;
+  // PZEM her okumada dinamik kontrol edilir (iletişim o an kesilmiş olabilir).
+  bool bmeOk = false;
+  bool sht1Ok = false;
+  bool sht2Ok = false;
+  bool tslOk = false;
+  bool inaOk = false;
+  bool rtcOk = false;
+  bool ds18b20Ok = false;
+  bool pzemOk = false;
+
   bool valid = false;
 };
 

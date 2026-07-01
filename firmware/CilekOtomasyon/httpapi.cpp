@@ -1,5 +1,6 @@
 #include "httpapi.h"
 #include "config.h"
+#include "alerts.h"
 
 #include <WiFi.h>
 #include <WebServer.h>
@@ -64,6 +65,17 @@ static void handleStatus() {
   doc["faults"]["lastAlarm"] = gState->lastAlarm;
 
   doc["stage"] = (int)gState->stage;
+
+  doc["system"]["bmeOk"] = gData->bmeOk;
+  doc["system"]["sht1Ok"] = gData->sht1Ok;
+  doc["system"]["sht2Ok"] = gData->sht2Ok;
+  doc["system"]["tslOk"] = gData->tslOk;
+  doc["system"]["inaOk"] = gData->inaOk;
+  doc["system"]["rtcOk"] = gData->rtcOk;
+  doc["system"]["ds18b20Ok"] = gData->ds18b20Ok;
+  doc["system"]["pzemOk"] = gData->pzemOk;
+  doc["system"]["gsmOk"] = alertsGsmOk();
+  doc["system"]["wifiRssi"] = WiFi.RSSI();
 
   String out;
   serializeJson(doc, out);

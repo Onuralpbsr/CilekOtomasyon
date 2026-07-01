@@ -28,7 +28,7 @@ static volatile uint32_t flowDrainPulses = 0;
 static void IRAM_ATTR onFlowInPulse() { flowInPulses++; }
 static void IRAM_ATTR onFlowDrainPulse() { flowDrainPulses++; }
 
-static bool bmeOk = false, sht1Ok = false, sht2Ok = false, tslOk = false, inaOk = false, rtcOk = false;
+static bool bmeOk = false, sht1Ok = false, sht2Ok = false, tslOk = false, inaOk = false, rtcOk = false, ds18b20Ok = false;
 
 void sensorsInit() {
   Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL);
@@ -45,6 +45,7 @@ void sensorsInit() {
   rtcOk = rtc.begin();
 
   ds18b20.begin();
+  ds18b20Ok = ds18b20.getDeviceCount() >= 2;
 
   pinMode(PIN_SOIL_MOISTURE, INPUT);
   pinMode(PIN_FLOAT_SWITCH, INPUT_PULLUP);
@@ -124,6 +125,15 @@ void sensorsRead(SensorData &d) {
 
   // Şamandıra NC varsayımı: su varken kontak kapalı (LOW), su bitince açık (HIGH)
   d.waterLevelOk = (digitalRead(PIN_FLOAT_SWITCH) == LOW);
+
+  d.bmeOk = bmeOk;
+  d.sht1Ok = sht1Ok;
+  d.sht2Ok = sht2Ok;
+  d.tslOk = tslOk;
+  d.inaOk = inaOk;
+  d.rtcOk = rtcOk;
+  d.ds18b20Ok = ds18b20Ok;
+  d.pzemOk = !isnan(d.acVoltage);
 
   d.valid = true;
 }
