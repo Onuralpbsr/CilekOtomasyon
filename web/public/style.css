@@ -27,7 +27,7 @@ body {
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1240px;
   margin: 0 auto;
   padding: 24px 20px 60px;
 }
@@ -169,46 +169,53 @@ section[id] { scroll-margin-top: 64px; }
 .card .value { font-size: 19px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .card .unit { font-size: 12px; font-weight: 400; color: var(--muted); }
 
-.relays {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.relay-row {
+.pump-card {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 10px 4px;
-  border-bottom: 1px solid var(--border);
-}
-.relay-row:last-child { border-bottom: none; }
-.relay-label { font-size: 14px; }
-
-.toggle {
-  position: relative;
-  width: 42px;
-  height: 24px;
-  border-radius: 12px;
-  border: none;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
   background: var(--card);
-  box-shadow: inset 0 0 0 1px var(--border);
   cursor: pointer;
-  padding: 0;
-  transition: background-color 0.2s ease;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
 }
-.toggle-thumb {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 18px;
-  height: 18px;
+.pump-card:hover { border-color: var(--border-strong); }
+.pump-card.on {
+  background: rgba(76, 175, 109, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(76, 175, 109, 0.18);
+}
+.pump-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel);
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.pump-card.on .pump-icon-wrap { background: rgba(76, 175, 109, 0.2); color: var(--accent); }
+.pump-icon { width: 21px; height: 21px; }
+.pump-card-text { flex: 1; display: flex; flex-direction: column; }
+.pump-card-label { font-size: 13px; color: var(--muted); }
+.pump-card-state { font-size: 19px; font-weight: 600; margin-top: 2px; color: var(--text); }
+.pump-card.on .pump-card-state { color: var(--accent); }
+.pump-card-indicator {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--muted);
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  flex-shrink: 0;
 }
-.toggle.on { background: rgba(76, 175, 109, 0.25); box-shadow: inset 0 0 0 1px var(--accent); }
-.toggle.on .toggle-thumb { transform: translateX(18px); background: var(--accent); }
+.pump-card.on .pump-card-indicator { background: var(--accent); animation: pulse 2s ease-in-out infinite; }
 
 #alarms { margin-bottom: 12px; min-height: 20px; color: var(--muted); font-size: 14px; }
 #alarms.has-alarm { color: var(--danger); font-weight: 600; }
