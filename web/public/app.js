@@ -134,9 +134,14 @@ async function refreshLive() {
     const relayDiv = document.getElementById("relayControls");
     relayDiv.innerHTML = RELAYS.map(r => {
       const on = status.relays[r.key];
-      return `<button class="relay-btn ${on ? "on" : ""}" data-relay="${r.key}" data-on="${!on}">${r.label}: ${on ? "AÇIK" : "KAPALI"}</button>`;
+      return `<div class="relay-row">
+        <span class="relay-label">${r.label}</span>
+        <button class="toggle ${on ? "on" : ""}" data-relay="${r.key}" data-on="${!on}" role="switch" aria-checked="${on}">
+          <span class="toggle-thumb"></span>
+        </button>
+      </div>`;
     }).join("");
-    relayDiv.querySelectorAll(".relay-btn").forEach(btn => {
+    relayDiv.querySelectorAll(".toggle").forEach(btn => {
       btn.onclick = () => sendControl({ relay: btn.dataset.relay, on: btn.dataset.on === "true" });
     });
 
@@ -198,6 +203,12 @@ function buildHistoryChartLayout() {
   container.innerHTML = legend + groupsHtml;
 }
 
+function hexToRgba(hex, alpha) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 function miniChartOptions() {
   return {
     responsive: true,
@@ -222,7 +233,14 @@ async function refreshHistory() {
   CHART_DEFS.forEach(c => {
     const data = {
       labels,
-      datasets: [{ data: rows.map(r => r[c.field]), borderColor: c.color, tension: 0.3, borderWidth: 1.5 }],
+      datasets: [{
+        data: rows.map(r => r[c.field]),
+        borderColor: c.color,
+        backgroundColor: hexToRgba(c.color, 0.12),
+        fill: true,
+        tension: 0.3,
+        borderWidth: 1.5,
+      }],
     };
     if (charts[c.id]) {
       charts[c.id].data = data;
