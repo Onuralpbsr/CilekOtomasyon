@@ -7,25 +7,37 @@ const RELAYS = [
 
 const STAGE_NAMES = ["Fide", "Vegetatif", "Çiçek", "Meyve"];
 
+// Renkler metrik türüne göre sabit (tutarlı okuma için): sıcaklık, nem,
+// ışık, VPD, hacim, oran ve güç her yerde aynı renk.
+const COLOR = {
+  temp: "#e0418f",
+  hum: "#3498db",
+  light: "#f1c40f",
+  vpd: "#e2574c",
+  volume: "#9b59b6",
+  ratio: "#e67e22",
+  power: "#4caf6d",
+};
+
 // Her grafik tek bir veri serisi gösterir - kategori başlığı altında gruplanır.
 const CHART_DEFS = [
-  { id: "chartAmbientTemp", group: "İklim", title: "Ortam Sıcaklık (BME280)", unit: "°C", field: "ambient_temp", color: "#e0418f" },
-  { id: "chartAmbientHum", group: "İklim", title: "Ortam Nem (BME280)", unit: "%", field: "ambient_hum", color: "#4caf6d" },
-  { id: "chartSht1Temp", group: "İklim", title: "SHT30 #1 Sıcaklık", unit: "°C", field: "sht1_temp", color: "#9b59b6" },
-  { id: "chartSht1Hum", group: "İklim", title: "SHT30 #1 Nem", unit: "%", field: "sht1_hum", color: "#9b59b6" },
-  { id: "chartSht2Temp", group: "İklim", title: "SHT30 #2 Sıcaklık", unit: "°C", field: "sht2_temp", color: "#3498db" },
-  { id: "chartSht2Hum", group: "İklim", title: "SHT30 #2 Nem", unit: "%", field: "sht2_hum", color: "#3498db" },
-  { id: "chartLux", group: "İklim", title: "Işık", unit: "lux", field: "lux", color: "#f1c40f" },
-  { id: "chartVpd", group: "İklim", title: "VPD", unit: "kPa", field: "vpd_kpa", color: "#e2574c" },
-  { id: "chartRootTemp", group: "Kök & Substrat", title: "Kök Bölgesi Sıcaklığı", unit: "°C", field: "rootzone_temp", color: "#f1c40f" },
-  { id: "chartNutrientTemp", group: "Kök & Substrat", title: "Besin Çözeltisi Sıcaklığı", unit: "°C", field: "nutrient_temp", color: "#e67e22" },
-  { id: "chartSoilMoisture", group: "Kök & Substrat", title: "Substrat Nemi", unit: "%", field: "soil_moisture_pct", color: "#3498db" },
-  { id: "chartFlowIn", group: "Sulama", title: "Sulama", unit: "L", field: "flow_in_l", color: "#9b59b6" },
-  { id: "chartFlowDrain", group: "Sulama", title: "Drenaj", unit: "L", field: "flow_drain_l", color: "#e67e22" },
-  { id: "chartRunoff", group: "Sulama", title: "Drenaj Oranı", unit: "%", field: "runoff_pct", color: "#e2574c" },
-  { id: "chartPumpCurrent", group: "Güç", title: "Pompa Akımı", unit: "A", field: "pump_current_a", color: "#e0418f" },
-  { id: "chartAcPower", group: "Güç", title: "AC Güç", unit: "W", field: "ac_power_w", color: "#4caf6d" },
-  { id: "chartAcEnergy", group: "Güç", title: "AC Enerji", unit: "kWh", field: "ac_energy_kwh", color: "#3498db" },
+  { id: "chartAmbientTemp", group: "İklim", title: "Ortam Sıcaklık (BME280)", unit: "°C", field: "ambient_temp", color: COLOR.temp },
+  { id: "chartAmbientHum", group: "İklim", title: "Ortam Nem (BME280)", unit: "%", field: "ambient_hum", color: COLOR.hum },
+  { id: "chartSht1Temp", group: "İklim", title: "SHT30 #1 Sıcaklık", unit: "°C", field: "sht1_temp", color: COLOR.temp },
+  { id: "chartSht1Hum", group: "İklim", title: "SHT30 #1 Nem", unit: "%", field: "sht1_hum", color: COLOR.hum },
+  { id: "chartSht2Temp", group: "İklim", title: "SHT30 #2 Sıcaklık", unit: "°C", field: "sht2_temp", color: COLOR.temp },
+  { id: "chartSht2Hum", group: "İklim", title: "SHT30 #2 Nem", unit: "%", field: "sht2_hum", color: COLOR.hum },
+  { id: "chartLux", group: "İklim", title: "Işık", unit: "lux", field: "lux", color: COLOR.light },
+  { id: "chartVpd", group: "İklim", title: "VPD", unit: "kPa", field: "vpd_kpa", color: COLOR.vpd },
+  { id: "chartRootTemp", group: "Kök & Substrat", title: "Kök Bölgesi Sıcaklığı", unit: "°C", field: "rootzone_temp", color: COLOR.temp },
+  { id: "chartNutrientTemp", group: "Kök & Substrat", title: "Besin Çözeltisi Sıcaklığı", unit: "°C", field: "nutrient_temp", color: COLOR.temp },
+  { id: "chartSoilMoisture", group: "Kök & Substrat", title: "Substrat Nemi", unit: "%", field: "soil_moisture_pct", color: COLOR.hum },
+  { id: "chartFlowIn", group: "Sulama", title: "Sulama", unit: "L", field: "flow_in_l", color: COLOR.volume },
+  { id: "chartFlowDrain", group: "Sulama", title: "Drenaj", unit: "L", field: "flow_drain_l", color: COLOR.volume },
+  { id: "chartRunoff", group: "Sulama", title: "Drenaj Oranı", unit: "%", field: "runoff_pct", color: COLOR.ratio },
+  { id: "chartPumpCurrent", group: "Güç", title: "Pompa Akımı", unit: "A", field: "pump_current_a", color: COLOR.power },
+  { id: "chartAcPower", group: "Güç", title: "AC Güç", unit: "W", field: "ac_power_w", color: COLOR.power },
+  { id: "chartAcEnergy", group: "Güç", title: "AC Enerji", unit: "kWh", field: "ac_energy_kwh", color: COLOR.power },
 ];
 
 const charts = {};
@@ -58,6 +70,8 @@ async function refreshLive() {
       return;
     }
     setBadge(connBadge, "Bağlı", "ok");
+    document.getElementById("lastUpdate").textContent =
+      `Son güncelleme: ${new Date().toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}`;
 
     const hasFault = status.faults.pumpFault || status.faults.waterLowFault || status.climate.alertActive;
 
